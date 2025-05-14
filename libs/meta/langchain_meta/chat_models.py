@@ -57,7 +57,7 @@ class ChatLlama(BaseChatOpenAI):  # type: ignore[override]
             from langchain_meta import ChatLlama
 
             llm = ChatLlama(
-                model="Llama-3.3-8B-Instruct",
+                model="Llama-4-Scout-17B-16E-Instruct-FP8",
                 temperature=0,
                 max_tokens=None,
                 timeout=None,
@@ -84,7 +84,7 @@ class ChatLlama(BaseChatOpenAI):  # type: ignore[override]
                 content="J'adore la programmation.",
                 response_metadata={
                     'token_usage': {'completion_tokens': 9, 'prompt_tokens': 32, 'total_tokens': 41},
-                    'model_name': 'Llama-3.3-8B-Instruct',
+                    'model_name': 'Llama-4-Scout-17B-16E-Instruct-FP8',
                     'system_fingerprint': None,
                     'finish_reason': 'stop',
                     'logprobs': None
@@ -108,7 +108,7 @@ class ChatLlama(BaseChatOpenAI):  # type: ignore[override]
             content=' programm' id='run-1bc996b5-293f-4114-96a1-e0f755c05eb9'
             content='ation' id='run-1bc996b5-293f-4114-96a1-e0f755c05eb9'
             content='.' id='run-1bc996b5-293f-4114-96a1-e0f755c05eb9'
-            content='' response_metadata={'finish_reason': 'stop', 'model_name': 'Llama-3.3-8B-Instruct'} id='run-1bc996b5-293f-4114-96a1-e0f755c05eb9'
+            content='' response_metadata={'finish_reason': 'stop', 'model_name': 'Llama-4-Scout-17B-16E-Instruct-FP8'} id='run-1bc996b5-293f-4114-96a1-e0f755c05eb9'
 
 
     Async:
@@ -128,7 +128,7 @@ class ChatLlama(BaseChatOpenAI):  # type: ignore[override]
                 content="J'adore la programmation.",
                 response_metadata={
                     'token_usage': {'completion_tokens': 9, 'prompt_tokens': 32, 'total_tokens': 41},
-                    'model_name': 'Llama-3.3-8B-Instruct',
+                    'model_name': 'Llama-4-Scout-17B-16E-Instruct-FP8',
                     'system_fingerprint': None,
                     'finish_reason': 'stop',
                     'logprobs': None
@@ -205,7 +205,7 @@ class ChatLlama(BaseChatOpenAI):  # type: ignore[override]
                     'prompt_tokens': 19,
                     'total_tokens': 23
                     },
-                'model_name': 'Llama-3.3-8B-Instruct',
+                'model_name': 'Llama-4-Scout-17B-16E-Instruct-FP8',
                 'system_fingerprint': None,
                 'finish_reason': 'stop',
                 'logprobs': None

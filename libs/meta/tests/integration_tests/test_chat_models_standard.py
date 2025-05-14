@@ -27,7 +27,7 @@ class TestLlamaStandard(ChatModelIntegrationTests):
     @property
     def chat_model_params(self) -> dict:
         return {
-            "model": "Llama-3.3-8B-Instruct",
+            "model": "Llama-4-Scout-17B-16E-Instruct-FP8",
             "rate_limiter": rate_limiter,
             "stream_usage": True,
         }
@@ -36,7 +36,7 @@ class TestLlamaStandard(ChatModelIntegrationTests):
 def test_reasoning_content() -> None:
     """Test reasoning content."""
     chat_model = ChatLlama(
-        model="Llama-3.3-8B-Instruct",
+        model="Llama-4-Scout-17B-16E-Instruct-FP8",
         reasoning_effort="low",
     )
     response = chat_model.invoke([HumanMessage(content="What is 3^3?")])
