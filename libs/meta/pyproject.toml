@@ -30,9 +30,7 @@ test = [
     "pytest-watcher<1.0.0,>=0.3.4",
     "pytest-asyncio<1.0.0,>=0.21.1",
     "docarray<1.0.0,>=0.32.1",
-    "langchain-openai",
-    "langchain-core",
-    "langchain-tests",
+    "langchain-tests==0.3.19",
     "pytest-socket<1.0.0,>=0.7.0",
 ]
 codespell = ["codespell<3.0.0,>=2.2.0"]
@@ -40,11 +38,6 @@ test_integration = []
 lint = ["ruff<1.0,>=0.5"]
 typing = ["mypy<2.0,>=1.10", "types-requests<3,>=2", "langchain-core"]
 dev = ["langchain-core"]
-
-[tool.uv.sources]
-langchain-core = { path = "../../core", editable = true }
-langchain-tests = { path = "../../standard-tests", editable = true }
-langchain-openai = { path = "../openai", editable = true }
 
 [tool.mypy]
 disallow_untyped_defs = "True"
