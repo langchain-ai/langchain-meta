@@ -12,7 +12,7 @@ on:
       working-directory:
         required: true
         type: string
-        default: 'libs/{lib}'
+        default: 'libs/meta'
       dangerous-nonmaster-release:
         required: false
         type: boolean
@@ -165,7 +165,7 @@ jobs:
 
       - name: Run integration tests
         env:
-          PARTNER_API_KEY: ${{ secrets.PARTNER_API_KEY }}
+          LLAMA_API_KEY: ${{ secrets.LLAMA_API_KEY }}
         run: |
           uv sync --group test --group test_integration
           make integration_tests
