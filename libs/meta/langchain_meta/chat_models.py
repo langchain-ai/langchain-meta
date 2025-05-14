@@ -1,3 +1,4 @@
+# Copyright (c) Meta Platforms, Inc. and affiliates
 """Wrapper around Llama's Chat Completions API."""
 
 from typing import Any, Literal, Optional, TypeVar, Union

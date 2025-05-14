@@ -1,3 +1,4 @@
+# Copyright (c) Meta Platforms, Inc. and affiliates
 """This module checks if the given python files can be imported without error."""
 
 import sys
