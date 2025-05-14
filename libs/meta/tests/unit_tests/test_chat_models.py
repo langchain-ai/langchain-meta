@@ -19,6 +19,7 @@ from langchain_meta import ChatLlama
 def test_initialization() -> None:
     """Test chat model initialization."""
     ChatLlama(model="Llama-3.3-8B-Instruct")
+    raise AssertionError()
 
 
 def test_llama_model_param() -> None:
