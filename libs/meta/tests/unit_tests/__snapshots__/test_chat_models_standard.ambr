@@ -17,7 +17,7 @@
       }),
       'max_retries': 2,
       'max_tokens': 100,
-      'model_name': 'Llama-3.3-8B-Instruct',
+      'model_name': 'Llama-4-Scout-17B-16E-Instruct-FP8',
       'request_timeout': 60.0,
       'stop': list([
       ]),

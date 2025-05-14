@@ -19,7 +19,7 @@ from langchain_meta import ChatLlama
 
 def test_initialization() -> None:
     """Test chat model initialization."""
-    ChatLlama(model="Llama-3.3-8B-Instruct")
+    ChatLlama(model="Llama-4-Scout-17B-16E-Instruct-FP8")
 
 
 def test_llama_model_param() -> None:
@@ -35,7 +35,7 @@ def test_chat_llama_invalid_streaming_params() -> None:
     """Test that streaming correctly invokes on_llm_new_token callback."""
     with pytest.raises(ValueError):
         ChatLlama(
-            model="Llama-3.3-8B-Instruct",
+            model="Llama-4-Scout-17B-16E-Instruct-FP8",
             max_tokens=10,
             streaming=True,
             temperature=0,
@@ -46,17 +46,21 @@ def test_chat_llama_invalid_streaming_params() -> None:
 def test_chat_llama_extra_kwargs() -> None:
     """Test extra kwargs to chat llama."""
     # Check that foo is saved in extra_kwargs.
-    llm = ChatLlama(model="Llama-3.3-8B-Instruct", foo=3, max_tokens=10)  # type: ignore[call-arg]
+    llm = ChatLlama(model="Llama-4-Scout-17B-16E-Instruct-FP8", foo=3, max_tokens=10)  # type: ignore[call-arg]
     assert llm.max_tokens == 10
     assert llm.model_kwargs == {"foo": 3}
 
     # Test that if extra_kwargs are provided, they are added to it.
-    llm = ChatLlama(model="Llama-3.3-8B-Instruct", foo=3, model_kwargs={"bar": 2})  # type: ignore[call-arg]
+    llm = ChatLlama(
+        model="Llama-4-Scout-17B-16E-Instruct-FP8", foo=3, model_kwargs={"bar": 2}
+    )  # type: ignore[call-arg]
     assert llm.model_kwargs == {"foo": 3, "bar": 2}
 
     # Test that if provided twice it errors
     with pytest.raises(ValueError):
-        ChatLlama(model="Llama-3.3-8B-Instruct", foo=3, model_kwargs={"foo": 2})  # type: ignore[call-arg]
+        ChatLlama(
+            model="Llama-4-Scout-17B-16E-Instruct-FP8", foo=3, model_kwargs={"foo": 2}
+        )  # type: ignore[call-arg]
 
 
 def test_function_dict_to_message_function_message() -> None:

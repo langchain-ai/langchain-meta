@@ -63,7 +63,7 @@ class TestLlamaStandard(ChatModelUnitTests):
 
     @property
     def chat_model_params(self) -> dict:
-        return {"model": "Llama-3.3-8B-Instruct"}
+        return {"model": "Llama-4-Scout-17B-16E-Instruct-FP8"}
 
     @property
     def init_from_env_params(self) -> tuple[dict, dict, dict]:
@@ -72,7 +72,7 @@ class TestLlamaStandard(ChatModelUnitTests):
                 "LLAMA_API_KEY": "api_key",
             },
             {
-                "model": "Llama-3.3-8B-Instruct",
+                "model": "Llama-4-Scout-17B-16E-Instruct-FP8",
             },
             {
                 "llama_api_key": "api_key",
