@@ -305,19 +305,15 @@ class ChatLlama(BaseChatOpenAI):  # type: ignore[override]
 
         if not (self.client or None):
             sync_specific: dict = {"http_client": self.http_client}
-            self.client = openai.OpenAI(
-                **client_params, **sync_specific
-            ).chat.completions
             self.root_client = openai.OpenAI(**client_params, **sync_specific)
+            self.client = self.root_client.chat.completions
         if not (self.async_client or None):
             async_specific: dict = {"http_client": self.http_async_client}
-            self.async_client = openai.AsyncOpenAI(
-                **client_params, **async_specific
-            ).chat.completions
             self.root_async_client = openai.AsyncOpenAI(
                 **client_params,
                 **async_specific,
             )
+            self.async_client = self.root_async_client.chat.completions
         return self
 
     def _create_chat_result(
