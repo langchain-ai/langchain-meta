@@ -424,12 +424,10 @@ class ChatLlama(BaseChatOpenAI):  # type: ignore[override]
         """  # noqa: E501
         # Some applications require that incompatible parameters (e.g., unsupported
         # methods) be handled.
-
-        if method != "json_schema":
-            raise ValueError(
-                "Only 'json_schema' method is supported for current LlamaAPI"
-            )
-
         return super().with_structured_output(
-            schema, method=method, include_raw=include_raw, strict=strict, **kwargs
+            schema,
+            method="json_schema",
+            include_raw=include_raw,
+            strict=strict,
+            **kwargs,
         )
