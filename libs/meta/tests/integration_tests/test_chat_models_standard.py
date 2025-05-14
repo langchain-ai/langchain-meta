@@ -1,3 +1,4 @@
+# Copyright (c) Meta Platforms, Inc. and affiliates
 """Standard LangChain interface tests"""
 
 from typing import Optional

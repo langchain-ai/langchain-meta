@@ -1,3 +1,4 @@
+# Copyright (c) Meta Platforms, Inc. and affiliates
 import pytest  # type: ignore[import-not-found]
 
 
