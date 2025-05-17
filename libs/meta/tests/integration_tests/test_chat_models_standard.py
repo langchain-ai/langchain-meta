@@ -39,6 +39,15 @@ class TestLlamaStandard(ChatModelIntegrationTests):
         """(bool) whether the model supports tool calling."""
         return False
 
+    @property
+    def supports_image_inputs(self) -> bool:
+        """(bool) whether the model supports tool calling."""
+        return True
+
+    @property
+    def supports_anthropic_inputs(self) -> bool:
+        return True
+
     @pytest.mark.xfail(
         reason=(
             "Pydantic v1 structured output requires tool_choice for BaseChatOpenAI."
