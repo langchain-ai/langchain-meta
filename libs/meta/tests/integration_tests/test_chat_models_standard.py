@@ -32,6 +32,11 @@ class TestLlamaStandard(ChatModelIntegrationTests):
             "stream_usage": True,
         }
 
+    @property
+    def has_tool_choice(self) -> bool:
+        """(bool) whether the model supports tool calling."""
+        return False
+
 
 def test_reasoning_content() -> None:
     """Test reasoning content."""
