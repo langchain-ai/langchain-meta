@@ -15,7 +15,7 @@ from langchain_meta import ChatLlama
 # Initialize the rate limiter in global scope, so it can be reused
 # across tests.
 rate_limiter = InMemoryRateLimiter(
-    requests_per_second=0.5,
+    requests_per_second=5,
 )
 
 
