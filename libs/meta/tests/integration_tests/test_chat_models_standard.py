@@ -9,6 +9,7 @@ from langchain_core.rate_limiters import InMemoryRateLimiter
 from langchain_tests.integration_tests import (  # type: ignore[import-not-found]
     ChatModelIntegrationTests,  # type: ignore[import-not-found]
 )
+import pytest
 
 from langchain_meta import ChatLlama
 
@@ -36,6 +37,14 @@ class TestLlamaStandard(ChatModelIntegrationTests):
     def has_tool_choice(self) -> bool:
         """(bool) whether the model supports tool calling."""
         return False
+
+    @pytest.mark.xfail(reason=("Pydantic v1 structured output requires tool_choice."))
+    def test_structured_output_pydantic_2_v1(self, model: BaseChatModel) -> None:
+        super().test_structured_output_pydantic_2_v1(model)
+
+    @pytest.mark.xfail(reason=("Does not support default properties."))
+    def test_structured_output_optional_param(self, model: BaseChatModel) -> None:
+        super().test_structured_output_optional_param(model)
 
 
 def test_reasoning_content() -> None:
