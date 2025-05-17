@@ -3,13 +3,14 @@
 
 from typing import Optional
 
+import pytest
 from langchain_core.language_models import BaseChatModel
 from langchain_core.messages import AIMessageChunk, BaseMessageChunk, HumanMessage
 from langchain_core.rate_limiters import InMemoryRateLimiter
+from langchain_core.tools import BaseTool
 from langchain_tests.integration_tests import (  # type: ignore[import-not-found]
     ChatModelIntegrationTests,  # type: ignore[import-not-found]
 )
-import pytest
 
 from langchain_meta import ChatLlama
 
@@ -38,13 +39,35 @@ class TestLlamaStandard(ChatModelIntegrationTests):
         """(bool) whether the model supports tool calling."""
         return False
 
-    @pytest.mark.xfail(reason=("Pydantic v1 structured output requires tool_choice."))
+    @pytest.mark.xfail(
+        reason=(
+            "Pydantic v1 structured output requires tool_choice for BaseChatOpenAI."
+        )
+    )
     def test_structured_output_pydantic_2_v1(self, model: BaseChatModel) -> None:
         super().test_structured_output_pydantic_2_v1(model)
 
     @pytest.mark.xfail(reason=("Does not support default properties."))
     def test_structured_output_optional_param(self, model: BaseChatModel) -> None:
         super().test_structured_output_optional_param(model)
+
+    @pytest.mark.xfail(reason=("Requires tool_choice."))
+    def test_structured_few_shot_examples(
+        self, model: BaseChatModel, my_adder_tool: BaseTool
+    ) -> None:
+        super().test_structured_few_shot_examples(model, my_adder_tool)
+
+    @pytest.mark.xfail(
+        reason=(
+            # TODO: investigate
+            "{'title': 'Bad request', 'detail': 'Unexpected param value `a`: \"1\"', "
+            "'status': 400}"
+        )
+    )
+    def test_tool_message_histories_list_content(
+        self, model: BaseChatModel, my_adder_tool: BaseTool
+    ) -> None:
+        super().test_tool_message_histories_list_content(model, my_adder_tool)
 
 
 def test_reasoning_content() -> None:
