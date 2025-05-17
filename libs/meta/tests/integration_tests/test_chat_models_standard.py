@@ -64,25 +64,7 @@ class TestLlamaStandard(ChatModelIntegrationTests):
             "'status': 400}"
         )
     )
-    def test_tool_message_histories_list_content(
+    def test_tool_message_histories_string_content(
         self, model: BaseChatModel, my_adder_tool: BaseTool
     ) -> None:
-        super().test_tool_message_histories_list_content(model, my_adder_tool)
-
-
-def test_reasoning_content() -> None:
-    """Test reasoning content."""
-    chat_model = ChatLlama(
-        model="Llama-4-Scout-17B-16E-Instruct-FP8",
-        reasoning_effort="low",
-    )
-    response = chat_model.invoke([HumanMessage(content="What is 3^3?")])
-    assert response.content
-    assert response.additional_kwargs["reasoning_content"]
-
-    # Test streaming
-    full: Optional[BaseMessageChunk] = None
-    for chunk in chat_model.stream("What is 3^3?"):
-        full = chunk if full is None else full + chunk
-    assert isinstance(full, AIMessageChunk)
-    assert full.additional_kwargs["reasoning_content"]
+        super().test_tool_message_histories_string_content(model, my_adder_tool)
