@@ -1,11 +1,8 @@
 # Copyright (c) Meta Platforms, Inc. and affiliates
 """Standard LangChain interface tests"""
 
-from typing import Optional
-
 import pytest
 from langchain_core.language_models import BaseChatModel
-from langchain_core.messages import AIMessageChunk, BaseMessageChunk, HumanMessage
 from langchain_core.rate_limiters import InMemoryRateLimiter
 from langchain_core.tools import BaseTool
 from langchain_tests.integration_tests import (  # type: ignore[import-not-found]
@@ -36,12 +33,10 @@ class TestLlamaStandard(ChatModelIntegrationTests):
 
     @property
     def has_tool_choice(self) -> bool:
-        """(bool) whether the model supports tool calling."""
         return False
 
     @property
     def supports_image_inputs(self) -> bool:
-        """(bool) whether the model supports tool calling."""
         return True
 
     @property
