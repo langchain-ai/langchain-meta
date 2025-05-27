@@ -80,6 +80,7 @@ def meta_agent_factory(
         output_schema: Optional Pydantic schema or dict for structured output
         disable_streaming: Whether to disable streaming
         additional_tags: Optional list of additional tags
+        method: Method to use for structured output
 
     Returns:
         A runnable chain that can be used for structured output
@@ -271,7 +272,7 @@ def extract_json_response(content: Any) -> Any:
     if match:
         try:
             return json.loads(match.group(1))
-        except:  # noqa: E722
+        except json.JSONDecodeError:
             pass
 
     # If we get here, return the original content

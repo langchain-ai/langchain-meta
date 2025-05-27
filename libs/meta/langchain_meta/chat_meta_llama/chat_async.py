@@ -1,3 +1,10 @@
+"""Asynchronous chat implementation for Meta Llama API.
+
+This module provides the AsyncChatMetaLlamaMixin class that implements
+asynchronous chat functionality for the native Meta Llama API using
+the llama-api-client package.
+"""
+
 import json
 import logging
 import re
@@ -17,7 +24,7 @@ from langchain_core.callbacks.manager import AsyncCallbackManagerForLLMRun
 from langchain_core.messages import (
     AIMessage,
     AIMessageChunk,
-    BaseMessage,  # Used by _detect_supervisor_request if that were moved, but it's on self,
+    BaseMessage,  # Used by _detect_supervisor_request if that were moved,
     ToolCallChunk,
 )
 from langchain_core.messages.ai import UsageMetadata
@@ -156,7 +163,8 @@ class AsyncChatMetaLlamaMixin:
         if effective_tools_lc_input is None and "tools" in kwargs:
             effective_tools_lc_input = kwargs.get("tools")
             logger.debug(
-                "_agenerate (non-streaming): Using 'tools' from **kwargs as direct 'tools' parameter was None."
+                "_agenerate (non-streaming): Using 'tools' from **kwargs as "
+                "direct 'tools' parameter was None."
             )
 
         prepared_llm_tools: Optional[list[completion_create_params.Tool]] = None
@@ -164,7 +172,8 @@ class AsyncChatMetaLlamaMixin:
             tools_list_to_prepare = effective_tools_lc_input
             if not isinstance(effective_tools_lc_input, list):
                 logger.warning(
-                    f"_agenerate (non-streaming): effective_tools_lc_input was not a list ({type(effective_tools_lc_input)}). Wrapping in a list."
+                    f"_agenerate (non-streaming): effective_tools_lc_input was not "
+                    f"a list ({type(effective_tools_lc_input)}). Wrapping in a list."
                 )
                 tools_list_to_prepare = [effective_tools_lc_input]
 
@@ -291,7 +300,8 @@ class AsyncChatMetaLlamaMixin:
                     final_args = {"value": tc_args_str}
                 except Exception as e:
                     logger.warning(
-                        f"Unexpected error processing tool call arguments: {e}. Representing as string."
+                        f"Unexpected error processing tool call arguments: {e}. "
+                        "Representing as string."
                     )
                     final_args = {"value": tc_args_str}
                 # Defensive: always ensure id, name, args
@@ -311,7 +321,8 @@ class AsyncChatMetaLlamaMixin:
                 )
             tool_calls_data = processed_tool_calls
 
-        # Fallback: If no tool_calls from API, try to parse from content_str if tools were provided and content looks like a textual tool call
+        # Fallback: If no tool_calls from API, try to parse from content_str if
+        # tools were provided and content looks like a textual tool call
         if not tool_calls_data and content_str and prepared_llm_tools:
             match = re.fullmatch(
                 r"\s*\[\s*([a-zA-Z0-9_]+)\s*(?:\(\s*(.*?)\s*\))?\s*\]\s*", content_str
@@ -569,7 +580,6 @@ class AsyncChatMetaLlamaMixin:
 
         # New approach for async: Keep track of active tool calls by index
         active_tool_streams_by_index_async: dict[int, dict[str, Any]] = {}
-
 
         cumulative_usage_for_gen_info: dict[
             str, Any
@@ -1035,7 +1045,6 @@ class AsyncChatMetaLlamaMixin:
         async for chunk in self._astream(
             messages=messages, run_manager=run_manager, **kwargs
         ):
-
             if chunk.generation_info:
                 final_generation_info.update(chunk.generation_info)
 

@@ -1,3 +1,5 @@
+"""Constants for the LangChain Meta Llama integration."""
+
 LLAMA_KNOWN_MODELS = {
     "Llama-3.3-70B-Instruct": {
         "model_name": "Llama-3.3-70B-Instruct",
@@ -20,4 +22,4 @@ LLAMA_KNOWN_MODELS = {
 LLAMA_DEFAULT_MODEL_NAME = "Llama-4-Maverick-17B-128E-Instruct-FP8"
 
 # Also include VALID_MODELS if it's used as a constant set
-VALID_MODELS = set(LLAMA_KNOWN_MODELS.keys()) 
+VALID_MODELS = set(LLAMA_KNOWN_MODELS.keys())

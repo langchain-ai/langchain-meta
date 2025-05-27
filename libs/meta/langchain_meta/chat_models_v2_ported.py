@@ -1,3 +1,9 @@
+"""Native Meta Llama API chat model implementation for LangChain.
+
+This module provides ChatMetaLlama, a LangChain-compatible chat model that uses
+the native Meta Llama API via the llama-api-client package. It supports tool
+calling, streaming, and structured output generation.
+"""
 # https://python.langchain.com/docs/how_to/custom_chat_model/
 
 import logging
@@ -91,6 +97,8 @@ from langchain_core.outputs import ChatGenerationChunk
 
 # Custom PydanticToolsParser that raises errors instead of returning None
 class RaisingPydanticToolsParser(PydanticToolsParser):
+    """Custom PydanticToolsParser that raises errors instead of returning None."""
+
     def _parse_tool_call_error(
         self,
         tool_call_name: str,
@@ -213,6 +221,19 @@ class ChatMetaLlama(SyncChatMetaLlamaMixin, AsyncChatMetaLlamaMixin, BaseChatMod
         async_client: Optional[AsyncLlamaAPIClient] = None,
         **kwargs: Any,
     ):
+        """Initialize the ChatMetaLlama model.
+
+        Args:
+            model_name: The name of the Llama model to use
+            temperature: Sampling temperature for generation
+            max_tokens: Maximum number of tokens to generate
+            repetition_penalty: Penalty for repetition in generation
+            llama_api_key: API key for Llama API authentication
+            llama_api_url: Base URL for the Llama API
+            client: Pre-configured sync LlamaAPIClient instance
+            async_client: Pre-configured async LlamaAPIClient instance
+            **kwargs: Additional keyword arguments
+        """
         # --- Temporary forceful logging setup ---
         # import sys
         #
@@ -347,6 +368,15 @@ class ChatMetaLlama(SyncChatMetaLlamaMixin, AsyncChatMetaLlamaMixin, BaseChatMod
     def validate_model_name(  # Renamed for clarity, validates 'model' field
         cls, v: Any, info: ValidationInfo
     ):
+        """Validate and set default for model_name field.
+
+        Args:
+            v: The value to validate
+            info: Pydantic validation info
+
+        Returns:
+            The validated model name string
+        """
         if v is None:
             # Allow None to pass through if the field is Optional and default=None applies
             # For model_name, Field has default=LLAMA_DEFAULT_MODEL_NAME, so it won't be None unless explicitly set.
@@ -385,6 +415,7 @@ class ChatMetaLlama(SyncChatMetaLlamaMixin, AsyncChatMetaLlamaMixin, BaseChatMod
 
     @property
     def client(self) -> LlamaAPIClient | None:
+        """Get the sync LlamaAPIClient instance."""
         return self._client
 
     @property
@@ -598,6 +629,18 @@ class ChatMetaLlama(SyncChatMetaLlamaMixin, AsyncChatMetaLlamaMixin, BaseChatMod
         strict: Optional[bool] = None,
         **other_kwargs: Any,
     ) -> Runnable:
+        """Create a runnable that returns structured output based on a schema.
+
+        Args:
+            schema: The schema to use for structured output
+            method: Method to use for structured output generation
+            include_raw: Whether to include raw response alongside parsed output
+            strict: Whether to use strict mode (not supported by Llama API)
+            **other_kwargs: Additional keyword arguments
+
+        Returns:
+            A runnable that produces structured output
+        """
         if other_kwargs:
             raise ValueError(f"Received unsupported arguments {other_kwargs}")
 

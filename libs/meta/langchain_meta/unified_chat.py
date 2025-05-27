@@ -1,4 +1,5 @@
-"""Unified ChatLlama implementation that supports both OpenAI-based and native backends."""
+"""Unified ChatLlama implementation that supports both OpenAI-based and
+native backends."""
 
 from typing import Any, Union
 
@@ -7,7 +8,8 @@ from .chat_models_v2_ported import ChatMetaLlama as ChatLlamaNative
 
 
 class ChatLlama:
-    """Unified ChatLlama class that supports both OpenAI-based and native Llama API backends.
+    """Unified ChatLlama class that supports both OpenAI-based and
+    native Llama API backends.
 
     This class provides a compatibility layer that allows users to choose between:
     - OpenAI-compatible backend (default, existing behavior)
