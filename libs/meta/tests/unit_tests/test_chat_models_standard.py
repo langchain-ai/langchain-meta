@@ -13,7 +13,7 @@ from pydantic import BaseModel, Field
 from pydantic.v1 import BaseModel as BaseModelV1
 from pydantic.v1 import Field as FieldV1
 
-from langchain_meta import ChatLlama
+from langchain_meta import ChatLlamaOpenAI
 
 
 def generate_schema_pydantic_v1_from_2() -> Any:
@@ -59,7 +59,7 @@ if PYDANTIC_MAJOR_VERSION == 2:
 class TestLlamaStandard(ChatModelUnitTests):
     @property
     def chat_model_class(self) -> type[BaseChatModel]:
-        return ChatLlama
+        return ChatLlamaOpenAI
 
     @property
     def chat_model_params(self) -> dict:
