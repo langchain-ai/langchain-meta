@@ -339,7 +339,8 @@ class AsyncChatMetaLlamaMixin:
                 ]
                 if tool_name_from_content in available_tool_names:
                     logger.info(
-                        f"Parsed textual tool call for '{tool_name_from_content}' from content."
+                        f"Parsed textual tool call for '{tool_name_from_content}' "
+                        "from content."
                     )
                     tool_call_id = str(uuid.uuid4())
                     parsed_args = {}
