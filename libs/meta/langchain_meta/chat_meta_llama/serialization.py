@@ -116,7 +116,7 @@ def _lc_message_to_llama_message_param(
 ) -> MessageParam:
     """Converts a LangChain BaseMessage to a Llama API MessageParam."""
     role: str
-    content: Union[str, dict[str, Any]]
+    content: Union[str, dict[str, Any]]  # noqa: F842
     tool_calls: Optional[list[dict[str, Any]]] = None
     tool_call_id: Optional[str] = None
 
@@ -731,7 +731,8 @@ def _is_typeddict(tool_type: type) -> bool:
 
 
 def _normalize_tool_call(tc: dict) -> dict:
-    """Defensive normalization for tool call dicts:
+    """Defensive normalization for tool call dicts.
+
     - Ensures 'id' is a non-empty string (generates uuid if missing/empty)
     - Ensures 'name' is a string (fallback to 'unknown_tool')
     - Ensures 'args' is a dict (parses string as JSON, else wraps as {'value': ...})
@@ -780,6 +781,7 @@ def _normalize_tool_call(tc: dict) -> dict:
 
 def _parse_textual_tool_args(args_str: Optional[str]) -> dict[str, Any]:
     """Parses a string of arguments like 'key="value", key2=value2' into a dict.
+
     Handles JSON-like structures if possible, otherwise falls back to regex parsing.
     """
     if not args_str or not args_str.strip():

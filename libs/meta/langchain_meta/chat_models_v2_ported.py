@@ -20,6 +20,10 @@ from typing import (
     Union,
 )
 
+from langchain_core.callbacks.manager import (
+    AsyncCallbackManagerForLLMRun,
+    CallbackManagerForLLMRun,
+)
 from langchain_core.language_models.base import LanguageModelInput
 from langchain_core.language_models.chat_models import BaseChatModel
 from langchain_core.messages import (
@@ -30,6 +34,7 @@ from langchain_core.output_parsers.openai_tools import (
     JsonOutputKeyToolsParser,
     PydanticToolsParser,
 )
+from langchain_core.outputs import ChatGenerationChunk
 from langchain_core.runnables import (
     Runnable,
     RunnableMap,
@@ -87,12 +92,6 @@ LLAMA_KNOWN_MODELS = {
 }
 
 LLAMA_DEFAULT_MODEL_NAME = "Llama-4-Maverick-17B-128E-Instruct-FP8"
-
-from langchain_core.callbacks.manager import (
-    AsyncCallbackManagerForLLMRun,
-    CallbackManagerForLLMRun,
-)
-from langchain_core.outputs import ChatGenerationChunk
 
 
 # Custom PydanticToolsParser that raises errors instead of returning None

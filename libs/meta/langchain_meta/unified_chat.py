@@ -37,6 +37,7 @@ class ChatLlama:
             temperature=0.1
         )
     """
+
     def __new__(
         cls, use_native_client: bool = False, **kwargs: Any
     ) -> Union[ChatLlamaOpenAI, ChatLlamaNative]:
