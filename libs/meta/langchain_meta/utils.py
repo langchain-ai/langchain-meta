@@ -1,4 +1,4 @@
-"""Meta-specific utility functions for better integration with LangChain and LangGraph."""
+"""Utility functions for better integration with LangChain and LangGraph."""
 
 import json
 import logging
@@ -21,10 +21,12 @@ logger = logging.getLogger(__name__)
 
 
 def parse_malformed_args_string(args_str: str) -> dict:
-    """Parse args when LLM formats them incorrectly as 'key="value", key2="value2"' or similar.
+    """Parse args when LLM formats them incorrectly.
 
-    This is a more robust parser for various malformed argument formats that LLMs might produce
-    when they don't properly format tool calls.
+    Example: 'key="value", key2="value2"' or similar.
+
+    This is a more robust parser for various malformed argument formats that LLMs might
+    produce when they don't properly format tool calls.
     """
     if args_str is None or not args_str:
         return {}
@@ -45,8 +47,9 @@ def parse_malformed_args_string(args_str: str) -> dict:
         for key, value in kv_matches:
             result[key] = value
 
-    # Try to match key=value patterns without quotes (must process even if quoted matches found)
-    # This handles formats like name=John, age=30 or mixed cases like name="John", age=30
+    # Try to match key=value patterns without quotes (must process even if quoted
+    # matches found). This handles formats like name=John, age=30 or mixed cases like
+    # name="John", age=30
     kv_matches_no_quotes = re.findall(r'([a-zA-Z0-9_]+)\s*=\s*([^,\s"\']+)', args_str)
     if kv_matches_no_quotes:
         for key, value in kv_matches_no_quotes:
@@ -122,7 +125,8 @@ def meta_agent_factory(
                 isinstance(output_schema, type) and issubclass(output_schema, BaseModel)
             ) and not isinstance(output_schema, dict):
                 raise ValueError(
-                    "output_schema must be a Pydantic model class or a dict for with_structured_output."
+                    "output_schema must be a Pydantic model class or a dict for "
+                    "with_structured_output."
                 )
 
             # Prepare schema for Meta's response_format
@@ -152,7 +156,8 @@ def meta_agent_factory(
                 bound_llm = RunnablePassthrough() | bound_llm_wrapper
             except Exception as struct_e:
                 logger.warning(
-                    f"Error using with_structured_output: {struct_e}. Using direct response_format instead."
+                    f"Error using with_structured_output: {struct_e}. Using direct "
+                    "response_format instead."
                 )
                 bound_llm = llm
 
@@ -166,7 +171,8 @@ def meta_agent_factory(
 
     elif tools:
         logger.debug(
-            f"Binding provided tools: {[tool.name for tool in tools if hasattr(tool, 'name')]}"
+            "Binding provided tools: "
+            f"{[tool.name for tool in tools if hasattr(tool, 'name')]}"
         )
         try:
             # Make sure to disable streaming for tool calling with Meta LLMs
@@ -206,7 +212,8 @@ def meta_agent_factory(
         )
     except Exception as prompt_error:
         logger.error(
-            f"Error creating prompt template: {prompt_error}. Using a direct SystemMessage instead."
+            f"Error creating prompt template: {prompt_error}. Using a direct "
+            "SystemMessage instead."
         )
         # Fallback approach if template creation fails
         prompt = ChatPromptTemplate.from_messages(
@@ -264,7 +271,7 @@ def extract_json_response(content: Any) -> Any:
         if match:
             try:
                 return json.loads(match.group(1).strip())
-            except:
+            except Exception:
                 pass
 
     # Try to find JSON objects in text

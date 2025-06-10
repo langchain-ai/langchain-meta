@@ -122,7 +122,8 @@ class ChatMetaLlama(SyncChatMetaLlamaMixin, AsyncChatMetaLlamaMixin, BaseChatMod
 
     Differences from OpenAI client:
     - No `tool_choice` parameter to force tool use.
-    - Response structure is `response.completion_message` instead of `response.choices[0].message`.
+    - Response structure is `response.completion_message` instead of
+        `response.choices[0].message`.
     - `ToolCall` objects in the response do not have a direct `.type` attribute.
 
     To use, you need to have the `llama-api-client` Python package installed and

@@ -1,7 +1,7 @@
 """Test chat model integration."""
 
 import os
-from typing import Any, Dict, Tuple, Type
+from typing import Any
 from unittest import mock
 
 import pytest
@@ -13,7 +13,7 @@ from langchain_meta.chat_models_v2_ported import ChatMetaLlama
 
 class TestChatMetaLlamaUnit(ChatModelUnitTests):
     @property
-    def chat_model_class(self) -> Type[ChatMetaLlama]:
+    def chat_model_class(self) -> type[ChatMetaLlama]:
         return ChatMetaLlama
 
     @property
@@ -21,7 +21,7 @@ class TestChatMetaLlamaUnit(ChatModelUnitTests):
         # These should be parameters used to initialize your integration for testing
         return {
             "model_name": "Llama-4-Maverick-17B-128E-Instruct-FP8",
-            "temperature": 0,  # Likely also a standard param, remove if it causes issues
+            "temperature": 0,
             "llama_api_url": "https://fake-chat-model-params.llama.com/v1/",
             "llama_api_key": "fake_llama_api_key",
         }
@@ -29,12 +29,12 @@ class TestChatMetaLlamaUnit(ChatModelUnitTests):
     @property
     def init_from_env_params(
         self,
-    ) -> Tuple[Dict[str, str], Dict[str, Any], Dict[str, Any]]:
+    ) -> tuple[dict[str, str], dict[str, Any], dict[str, Any]]:
         """Provides parameters for testing initialization from environment variables."""
         return (
             {
                 "LLAMA_API_KEY": "fake_env_api_key",
-                "LLAMA_API_URL": "",  # Ensure this doesn't take precedence with a real-looking URL
+                "LLAMA_API_URL": "",
                 "META_API_BASE_URL": "https://fake-env-api.llama.com/v1/",
             },
             {  # Additional model init kwargs
@@ -48,7 +48,9 @@ class TestChatMetaLlamaUnit(ChatModelUnitTests):
         )
 
     @pytest.mark.xfail(
-        reason="Custom SecretStr handling and init logic for Llama API environment setup."
+        reason=(
+            "Custom SecretStr handling and init logic for Llama API environment setup."
+        )
     )
     def test_init_from_env(self) -> None:
         """Test initialization from environment variables, handling SecretStr."""

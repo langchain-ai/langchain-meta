@@ -1,13 +1,12 @@
 # Standard library imports
 import logging
 import os
-from typing import Type
 
+import pytest
+from langchain_core.language_models import BaseChatModel
 from langchain_tests.integration_tests.chat_models import ChatModelIntegrationTests
 
 from langchain_meta.chat_models_v2_ported import ChatMetaLlama
-import pytest
-from langchain_core.language_models import BaseChatModel
 
 logging.basicConfig(level=logging.DEBUG)
 logging.getLogger("langchain_meta.chat_meta_llama.chat_sync").setLevel(logging.DEBUG)
@@ -16,7 +15,7 @@ logging.getLogger("langchain_meta.chat_models").setLevel(logging.DEBUG)
 
 class TestChatMetaLlamaIntegration(ChatModelIntegrationTests):
     @property
-    def chat_model_class(self) -> Type[ChatMetaLlama]:
+    def chat_model_class(self) -> type[ChatMetaLlama]:
         return ChatMetaLlama
 
     @property
@@ -51,8 +50,9 @@ class TestChatMetaLlamaIntegration(ChatModelIntegrationTests):
         reason=(
             "Llama model exercises discretion in tool use with 'function_calling' "
             "method of with_structured_output when tool_choice cannot be API-enforced. "
-            "The specific prompt in this test ('no punchline') leads the model to not call the tool, "
-            "resulting in a None output where a structured object is expected."
+            "The specific prompt in this test ('no punchline') leads the model to not "
+            "call the tool, resulting in a None output where a structured object is "
+            "expected."
         )
     )
     def test_structured_output_optional_param(self, model: BaseChatModel) -> None:
