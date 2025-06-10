@@ -3,6 +3,8 @@ from langchain_meta import __all__
 
 EXPECTED_ALL = [
     "ChatLlama",
+    "ChatLlamaOpenAI",
+    "ChatLlamaNative",
 ]
 
 
