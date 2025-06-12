@@ -3,18 +3,21 @@
 import json
 import logging
 import re
-from typing import Any, Optional, Union
+from typing import Any, Optional, Union, cast
 
 from langchain_core.language_models import BaseChatModel
-from langchain_core.messages import (
-    BaseMessage,
-    SystemMessage,
-)
+from langchain_core.messages import BaseMessage, SystemMessage
 from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
 from langchain_core.runnables import RunnableLambda, RunnablePassthrough
-from langchain_core.runnables.base import RunnableSequence
+from langchain_core.runnables.base import Runnable, RunnableSequence
 from langchain_core.tools import StructuredTool
 from pydantic import BaseModel
+
+# Type alias for a model that can be either a BaseChatModel or a Runnable
+ModelType = Union[BaseChatModel, Runnable[Any, Any]]
+
+# Type for the final chain
+ChainType = Union[RunnableSequence, Runnable[Any, Any]]
 
 # Set up logging
 logger = logging.getLogger(__name__)
@@ -73,7 +76,7 @@ def meta_agent_factory(
     disable_streaming: bool = False,
     additional_tags: Optional[list[str]] = None,
     method: str = "json_mode",
-) -> RunnableSequence:
+) -> RunnableSequence[Any, Any]:
     """Create a Meta-specific agent with structured output support.
 
     Args:
@@ -100,18 +103,20 @@ def meta_agent_factory(
         >>> result = agent.invoke({"messages": [...]})
     """
     # Always disable streaming for structured output - this is crucial for Meta LLMs
+    # Use a different variable to avoid reassigning to llm which is typed as BaseChatModel
+    modified_llm: ModelType = llm
     if output_schema is not None or disable_streaming:
         # Force disable streaming at the LLM level for more reliable outputs
-        if hasattr(llm, "streaming") and llm.streaming:
+        if hasattr(modified_llm, "streaming") and modified_llm.streaming:
             logger.debug("Disabling streaming in LLM for structured output reliability")
-            llm = llm.bind(streaming=False)
+            modified_llm = modified_llm.bind(streaming=False)
 
     # Set low temperature for structured output - critical for Meta models
-    if hasattr(llm, "temperature") and (
-        llm.temperature is None or llm.temperature > 0.2
+    if hasattr(modified_llm, "temperature") and (
+        modified_llm.temperature is None or modified_llm.temperature > 0.2
     ):
         logger.debug("Setting temperature=0.1 for more reliable structured output")
-        llm = llm.bind(temperature=0.1)
+        modified_llm = modified_llm.bind(temperature=0.1)
 
     # Use structured output if schema is provided
     if output_schema is not None:
@@ -138,7 +143,7 @@ def meta_agent_factory(
                 schema_dict = output_schema
 
             # Apply Meta-specific response_format structure
-            llm = llm.bind(
+            modified_llm = modified_llm.bind(
                 response_format={
                     "type": "json_schema",
                     "json_schema": {
@@ -150,16 +155,27 @@ def meta_agent_factory(
 
             # Also use the LangChain with_structured_output for backward compatibility
             try:
-                bound_llm_wrapper = llm.with_structured_output(
-                    output_schema, include_raw=False
-                )
-                bound_llm = RunnablePassthrough() | bound_llm_wrapper
+                # Check if the model has with_structured_output method
+                if hasattr(modified_llm, "with_structured_output"):
+                    # Use type assertion to tell the type checker that modified_llm has with_structured_output
+                    llm_with_method = cast(Any, modified_llm)
+                    bound_llm_wrapper = llm_with_method.with_structured_output(
+                        output_schema, include_raw=False
+                    )
+                    # Use a different variable name to avoid redefinition
+                    structured_llm = RunnablePassthrough() | bound_llm_wrapper
+                else:
+                    logger.warning(
+                        "Model does not have with_structured_output method. Using direct "
+                        "response_format instead."
+                    )
+                    structured_llm = modified_llm
             except Exception as struct_e:
                 logger.warning(
                     f"Error using with_structured_output: {struct_e}. Using direct "
                     "response_format instead."
                 )
-                bound_llm = llm
+                structured_llm = modified_llm
 
         except Exception as e:
             logger.error(f"Error setting up structured output: {e}", exc_info=True)
@@ -167,7 +183,7 @@ def meta_agent_factory(
                 "Falling back to default LLM behavior without structured output."
             )
             # Fall back to regular LLM if structured output setup fails
-            bound_llm = llm
+            structured_llm = llm
 
     elif tools:
         logger.debug(
@@ -176,29 +192,53 @@ def meta_agent_factory(
         )
         try:
             # Make sure to disable streaming for tool calling with Meta LLMs
-            if disable_streaming and hasattr(llm, "streaming") and llm.streaming:
-                llm = llm.bind(streaming=False)
+            if disable_streaming and hasattr(modified_llm, "streaming"):
+                streaming_value = getattr(modified_llm, "streaming", False)
+                if streaming_value:
+                    logger.debug("Disabling streaming for tool calling")
+                    modified_llm = modified_llm.bind(streaming=False)
 
             # Set low temperature for tool calling
-            if hasattr(llm, "temperature") and (
-                llm.temperature is None or llm.temperature > 0.2
-            ):
-                llm = llm.bind(temperature=0.1)
+            if hasattr(modified_llm, "temperature"):
+                temp_value = getattr(modified_llm, "temperature", None)
+                if temp_value is None or temp_value > 0.2:
+                    logger.debug("Setting temperature=0.1 for tool calling")
+                    modified_llm = modified_llm.bind(temperature=0.1)
 
             # This will now call the (correctly implemented) bind_tools on the llm.
-            bound_llm = llm.bind_tools(tools)
+            if hasattr(modified_llm, "bind_tools"):
+                # Use type assertion to tell the type checker that modified_llm has bind_tools
+                llm_with_tools = cast(Any, modified_llm)
+                tools_llm = llm_with_tools.bind_tools(tools)
+            else:
+                logger.warning(
+                    "Model does not have bind_tools method. Using regular model."
+                )
+                tools_llm = modified_llm
         except Exception as e:
             logger.error(f"Error binding tools: {e}", exc_info=True)
             logger.info("Falling back to default LLM behavior without tools.")
-            bound_llm = llm  # Fallback
+            tools_llm = llm  # Fallback
     else:
         # Default case: no schema, no tools
-        bound_llm = llm
+        tools_llm = modified_llm
+
+    # Initialize variables to avoid "possibly unbound" errors
+    structured_llm = modified_llm  # Default if not set in the output_schema block
+    tools_llm = modified_llm  # Default if not set in the tools block
+
+    # Determine which model to use based on the conditions
+    if output_schema is not None:
+        final_llm = structured_llm
+    elif tools:
+        final_llm = tools_llm
+    else:
+        final_llm = modified_llm
 
     # Add any additional tags
     if additional_tags:
         if isinstance(additional_tags, list):
-            bound_llm = bound_llm.bind(tags=additional_tags)
+            final_llm = final_llm.bind(tags=additional_tags)
 
     # Create a basic prompt
     try:
@@ -224,7 +264,7 @@ def meta_agent_factory(
         )
 
     # Return the full chain
-    def ensure_list_output(output):
+    def ensure_list_output(output: Any) -> Union[dict[str, list[BaseMessage]], Any]:
         # If output is a dict with "messages", return as is
         if isinstance(output, dict) and "messages" in output:
             return output
@@ -237,7 +277,10 @@ def meta_agent_factory(
         # Otherwise, return as is
         return output
 
-    return (prompt | bound_llm) | RunnableLambda(ensure_list_output)
+    # Create a properly typed chain
+    chain: ChainType = (prompt | final_llm) | RunnableLambda(ensure_list_output)
+    # Cast to the expected return type
+    return cast(RunnableSequence[Any, Any], chain)
 
 
 def extract_json_response(content: Any) -> Any:
