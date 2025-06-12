@@ -32,7 +32,7 @@ logger = logging.getLogger(__name__)
 
 def serialize_message(message: BaseMessage) -> dict[str, Any]:
     """Serialize a LangChain message to a JSON-serializable dict."""
-    result = {
+    result: dict[str, Any] = {
         "type": message.__class__.__name__,
         "content": message.content
         if isinstance(message.content, str)
@@ -199,7 +199,7 @@ def _lc_message_to_llama_message_param(
                                         ):  # JSON schema "number" can be float or int
                                             coerced_args_dict[arg_name] = float(
                                                 arg_value
-                                            )
+                                            )  # type: ignore
                                         elif expected_type == "boolean":
                                             if arg_value.lower() == "true":
                                                 coerced_args_dict[arg_name] = True
@@ -209,14 +209,14 @@ def _lc_message_to_llama_message_param(
                                                 logger.warning(
                                                     f"Cannot coerce string '{arg_value}' to boolean for arg '{arg_name}'. Keeping as string."
                                                 )
-                                                coerced_args_dict[arg_name] = arg_value
+                                                coerced_args_dict[arg_name] = arg_value  # type: ignore
                                         else:
-                                            coerced_args_dict[arg_name] = arg_value
+                                            coerced_args_dict[arg_name] = arg_value  # type: ignore
                                     except ValueError:
                                         logger.warning(
                                             f"Failed to coerce string arg '{arg_name}' value '{arg_value}' to type '{expected_type}'. Keeping as string."
                                         )
-                                        coerced_args_dict[arg_name] = arg_value
+                                        coerced_args_dict[arg_name] = arg_value  # type: ignore
                                 else:
                                     coerced_args_dict[arg_name] = arg_value
                             args_dict = coerced_args_dict
@@ -717,7 +717,7 @@ try:
     )
 
     _TYPED_DICT_META_TYPES.append(_TypedDictMetaExtensions)
-except ImportError:
+except (ImportError, AttributeError):
     pass
 
 
