@@ -24,13 +24,12 @@ from langchain_core.outputs import (
     ChatGeneration,
     ChatGenerationChunk,
     ChatResult,
+    LLMResult,  # Added import for type conversion
 )
 from langchain_core.tools import BaseTool
 from langchain_core.utils.function_calling import convert_to_openai_tool  # Import added
 from llama_api_client import LlamaAPIClient
-from llama_api_client.types.chat import (
-    completion_create_params,
-)
+from llama_api_client.types.chat import completion_create_params
 
 # from llama_api_client.types.create_chat_completion_response import CreateChatCompletionResponse # Only for async
 from pydantic import BaseModel
@@ -541,9 +540,14 @@ class SyncChatMetaLlamaMixin:
         # === Callback Handling Start for on_llm_end ===
         if llm_run_manager:
             try:
-                # The on_llm_end call expects the ChatResult object directly
-                # The llm_output within the result object is now standardized
-                llm_run_manager.on_llm_end(result)  # type: ignore[attr-defined]
+                # Convert ChatResult to LLMResult for on_llm_end callback
+                # The on_llm_end method expects an LLMResult, not a ChatResult
+                # Use a type ignore comment to bypass the type checker
+                llm_result = LLMResult(
+                    generations=[[gen for gen in result.generations]],  # type: ignore
+                    llm_output=result.llm_output,
+                )
+                llm_run_manager.on_llm_end(llm_result)
             except Exception as e:
                 logger.warning(f"Error in on_llm_end callback: {str(e)}")
                 if (
