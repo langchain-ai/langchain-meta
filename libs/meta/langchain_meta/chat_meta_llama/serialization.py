@@ -703,22 +703,7 @@ def _create_minimal_tool(lc_tool: Any) -> dict:
     }
 
 
-# Helper function to check for TypedDict, supporting older typing_extensions
-_TYPED_DICT_META_TYPES: list[type] = []
-try:
-    from typing import _TypedDictMeta  # type: ignore
-
-    _TYPED_DICT_META_TYPES.append(_TypedDictMeta)
-except (ImportError, AttributeError):
-    pass
-try:
-    from typing_extensions import (
-        _TypedDictMeta as _TypedDictMetaExtensions,  # type: ignore
-    )
-
-    _TYPED_DICT_META_TYPES.append(_TypedDictMetaExtensions)
-except (ImportError, AttributeError):
-    pass
+# Helper function to check for TypedDict using standard attributes
 
 
 def _is_typeddict(tool_type: type) -> bool:
