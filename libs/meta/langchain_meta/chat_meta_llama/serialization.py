@@ -704,12 +704,12 @@ def _create_minimal_tool(lc_tool: Any) -> dict:
 
 
 # Helper function to check for TypedDict, supporting older typing_extensions
-_TYPED_DICT_META_TYPES = []
+_TYPED_DICT_META_TYPES: list[type] = []
 try:
     from typing import _TypedDictMeta  # type: ignore
 
     _TYPED_DICT_META_TYPES.append(_TypedDictMeta)
-except ImportError:
+except (ImportError, AttributeError):
     pass
 try:
     from typing_extensions import (
@@ -722,12 +722,11 @@ except (ImportError, AttributeError):
 
 
 def _is_typeddict(tool_type: type) -> bool:
-    if not _TYPED_DICT_META_TYPES:
-        # Fallback if metaclasses can't be imported, check for common TypedDict attributes
-        return hasattr(tool_type, "__required_keys__") or hasattr(
-            tool_type, "__optional_keys__"
-        )
-    return isinstance(tool_type, tuple(_TYPED_DICT_META_TYPES))
+    # Always use the fallback method as it's more reliable across Python versions
+    # than relying on private _TypedDictMeta classes
+    return hasattr(tool_type, "__required_keys__") or hasattr(
+        tool_type, "__optional_keys__"
+    )
 
 
 def _normalize_tool_call(tc: dict) -> dict:
