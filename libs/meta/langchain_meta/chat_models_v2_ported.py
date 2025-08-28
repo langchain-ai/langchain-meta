@@ -717,13 +717,14 @@ class ChatMetaLlama(SyncChatMetaLlamaMixin, AsyncChatMetaLlamaMixin, BaseChatMod
         stop: Optional[list[str]] = None,
         run_manager: Optional[CallbackManagerForLLMRun] = None,
         tools: list[dict[Any, Any] | type[BaseModel] | Callable[..., Any] | BaseTool] | None = None,
+        tool_choice: Literal['auto', 'none', 'any', 'required'] | dict[Any, Any] | str | None = None,
         **kwargs: Any,
     ) -> Iterator[ChatGenerationChunk]:
         """Stream chat messages, returning an iterator of ChatGenerationChunks."""
         # START_EDIT
         # Explicitly call the mixin's method
         return SyncChatMetaLlamaMixin._stream(
-            self, messages=messages, stop=stop, run_manager=run_manager, tools=tools, **kwargs
+            self, messages=messages, stop=stop, run_manager=run_manager, tools=tools, tool_choice=tool_choice, **kwargs
         )
         # END_EDIT
 
