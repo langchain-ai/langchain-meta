@@ -38,7 +38,7 @@ class ChatLlama:
         )
     """
 
-    def __new__(
+    def __new__(  # type: ignore[misc]
         cls, use_native_client: bool = False, **kwargs: Any
     ) -> Union[ChatLlamaOpenAI, ChatLlamaNative]:
         """Factory method that returns the appropriate implementation.

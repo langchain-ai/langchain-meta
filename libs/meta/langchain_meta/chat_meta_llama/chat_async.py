@@ -111,7 +111,7 @@ class AsyncChatMetaLlamaMixin:
         start_time = datetime.now()
 
         # Prepare callback options
-        callback_options = {}
+        callback_options: dict[str, Any] = {}
 
         # Check for structured output format in run_metadata
         if "run_metadata" in kwargs and isinstance(kwargs["run_metadata"], dict):
@@ -272,7 +272,7 @@ class AsyncChatMetaLlamaMixin:
             except (AttributeError, TypeError, KeyError):
                 pass
 
-        generation_info = {}
+        generation_info: dict[str, Any] = {}
         tool_calls_data = []
         if result_msg and hasattr(result_msg, "tool_calls") and result_msg.tool_calls:
             processed_tool_calls: list[dict] = []
@@ -396,7 +396,7 @@ class AsyncChatMetaLlamaMixin:
             and call_result.metrics
             and isinstance(call_result.metrics, list)
         ):
-            usage_meta = {}
+            usage_meta: dict[str, int] = {}
             for metric_item in call_result.metrics:
                 if hasattr(metric_item, "metric") and hasattr(metric_item, "value"):
                     metric_name = getattr(metric_item, "metric")
@@ -1041,7 +1041,7 @@ class AsyncChatMetaLlamaMixin:
         run_manager: Optional[AsyncCallbackManagerForLLMRun] = None,
         **kwargs: Any,
     ) -> AsyncIterator[ChatGenerationChunk]:
-        final_generation_info = {}
+        final_generation_info: dict[str, Any] = {}
 
         async for chunk in self._astream(
             messages=messages, run_manager=run_manager, **kwargs
@@ -1098,7 +1098,7 @@ class AsyncChatMetaLlamaMixin:
         # { 'id': str, 'name': Optional[str], 'args_str_parts': List[str], 'type': str }
         aggregated_tool_call_parts_by_index: dict[int, dict[str, Any]] = {}
 
-        final_generation_info_aggregated = {}
+        final_generation_info_aggregated: dict[str, Any] = {}
         last_chunk_for_finish_reason = None
         raw_response_dict_for_llm_output = None
 
