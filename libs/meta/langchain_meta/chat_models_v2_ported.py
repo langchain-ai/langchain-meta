@@ -557,7 +557,9 @@ class ChatMetaLlama(SyncChatMetaLlamaMixin, AsyncChatMetaLlamaMixin, BaseChatMod
 
         return params
 
-    def _get_invocation_params(self, stop: list[str] | None = None, **kwargs: Any) -> dict[Any, Any]:
+    def _get_invocation_params(
+        self, stop: list[str] | None = None, **kwargs: Any
+    ) -> dict[Any, Any]:
         """Gets the parameters for a chat completion invocation."""
         return {
             "model_name": self.model_name,
@@ -716,15 +718,25 @@ class ChatMetaLlama(SyncChatMetaLlamaMixin, AsyncChatMetaLlamaMixin, BaseChatMod
         messages: list[BaseMessage],
         stop: Optional[list[str]] = None,
         run_manager: Optional[CallbackManagerForLLMRun] = None,
-        tools: list[dict[Any, Any] | type[BaseModel] | Callable[..., Any] | BaseTool] | None = None,
-        tool_choice: Literal['auto', 'none', 'any', 'required'] | dict[Any, Any] | str | None = None,
+        tools: list[dict[Any, Any] | type[BaseModel] | Callable[..., Any] | BaseTool]
+        | None = None,
+        tool_choice: Literal["auto", "none", "any", "required"]
+        | dict[Any, Any]
+        | str
+        | None = None,
         **kwargs: Any,
     ) -> Iterator[ChatGenerationChunk]:
         """Stream chat messages, returning an iterator of ChatGenerationChunks."""
         # START_EDIT
         # Explicitly call the mixin's method
         return SyncChatMetaLlamaMixin._stream(
-            self, messages=messages, stop=stop, run_manager=run_manager, tools=tools, tool_choice=tool_choice, **kwargs
+            self,
+            messages=messages,
+            stop=stop,
+            run_manager=run_manager,
+            tools=tools,
+            tool_choice=tool_choice,
+            **kwargs,
         )
         # END_EDIT
 
