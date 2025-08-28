@@ -1,61 +1,78 @@
-# Copyright (c) Meta Platforms, Inc. and affiliates
-"""Unified chat interface for different Llama implementations."""
+"""Unified ChatLlama class.
+
+Supports both OpenAI-based and native Llama API backends.
+"""
 
 from typing import Any, Union
 
-
-class ChatLlamaOpenAI:
-    """OpenAI-compatible ChatLlama implementation."""
-
-    def __init__(self, **kwargs: Any) -> None:
-        """Initialize the OpenAI-compatible implementation."""
-        self.kwargs = kwargs
-
-    def invoke(self, messages: Any) -> Any:
-        """Invoke chat completion."""
-        return f"OpenAI response: {messages}"
-
-
-class ChatLlamaNative:
-    """Native ChatLlama implementation."""
-
-    def __init__(self, **kwargs: Any) -> None:
-        """Initialize the native implementation."""
-        self.kwargs = kwargs
-
-    def invoke(self, messages: Any) -> Any:
-        """Invoke chat completion."""
-        return f"Native response: {messages}"
+from .chat_models import ChatLlama as ChatLlamaOpenAI
+from .chat_models_v2_ported import ChatMetaLlama as ChatLlamaNative
 
 
 class ChatLlama:
-    """Unified ChatLlama factory class."""
+    """Unified ChatLlama class.
 
-    # Fix for line 41: Option A - Add type ignore for __new__ method
-    # (factory class pattern)
+    Supports both OpenAI-based and native Llama API backends.
+
+    This class provides a compatibility layer that allows users to choose between:
+    - OpenAI-compatible backend (default, existing behavior)
+    - Native Llama API backend (enhanced features, better tool calling)
+
+    Args:
+        use_native_client: If True, uses the native Llama API client.
+                          If False (default), uses OpenAI-compatible client.
+        **kwargs: Arguments passed to the underlying implementation.
+
+    Examples:
+        # Use existing OpenAI-based implementation (default)
+        llm = ChatLlama(model="Llama-3.3-8B-Instruct")
+
+        # Use enhanced native implementation
+        llm = ChatLlama(model="Llama-3.3-8B-Instruct", use_native_client=True)
+
+        # Native implementation with enhanced features
+        llm_native = ChatLlama(
+            model_name="Llama-3.3-8B-Instruct",
+            use_native_client=True,
+            temperature=0.1
+        )
+    """
+
     def __new__(  # type: ignore[misc]
-        cls, implementation: str = "openai", **kwargs: Any
+        cls, use_native_client: bool = False, **kwargs: Any
     ) -> Union[ChatLlamaOpenAI, ChatLlamaNative]:
-        """Create appropriate ChatLlama implementation.
+        """Factory method that returns the appropriate implementation.
 
-        This is a factory class pattern where __new__ returns instances
-        of different classes. The type ignore is needed because mypy
-        expects __new__ to return cls instance.
+        Args:
+            use_native_client: Whether to use the native Llama API client
+            **kwargs: Arguments for the underlying chat model
+
+        Returns:
+            Either ChatLlamaOpenAI or ChatLlamaNative instance
         """
-        if implementation == "openai":
-            return ChatLlamaOpenAI(**kwargs)
-        elif implementation == "native":
+        if use_native_client:
+            # Remove the use_native_client parameter before passing to ChatLlamaNative
+            kwargs.pop("use_native_client", None)
+
+            # Handle parameter mapping for native client
+            # OpenAI-style 'model' -> native 'model_name'
+            if "model" in kwargs and "model_name" not in kwargs:
+                kwargs["model_name"] = kwargs.pop("model")
+
             return ChatLlamaNative(**kwargs)
         else:
-            raise ValueError(f"Unknown implementation: {implementation}")
+            # Remove the use_native_client parameter before passing to ChatLlamaOpenAI
+            kwargs.pop("use_native_client", None)
 
-    def __init__(self, **kwargs: Any) -> None:
-        """Initialize ChatLlama (this won't be called due to __new__)."""
-        pass
+            # Ensure 'model' parameter is present for OpenAI-based implementation
+            if "model_name" in kwargs and "model" not in kwargs:
+                kwargs["model"] = kwargs.pop("model_name")
+
+            if "model" not in kwargs:
+                raise ValueError("OpenAI-based ChatLlama requires 'model' parameter")
+
+            return ChatLlamaOpenAI(**kwargs)
 
 
-def create_chat_llama(
-    implementation: str = "openai", **kwargs: Any
-) -> Union[ChatLlamaOpenAI, ChatLlamaNative]:
-    """Factory function to create ChatLlama instances."""
-    return ChatLlama(implementation=implementation, **kwargs)  # type: ignore
+# For backward compatibility, also export the specific implementations
+__all__ = ["ChatLlama", "ChatLlamaOpenAI", "ChatLlamaNative"]

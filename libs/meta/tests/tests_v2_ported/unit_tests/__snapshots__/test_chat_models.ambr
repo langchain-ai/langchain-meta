@@ -1,0 +1,26 @@
+# serializer version: 1
+# name: TestChatMetaLlamaUnit.test_serdes[serialized]
+  dict({
+    'id': list([
+      'langchain_meta',
+      'chat_models_v2_ported',
+      'ChatMetaLlama',
+    ]),
+    'kwargs': dict({
+      'llama_api_key': dict({
+        'id': list([
+          'LLAMA_API_KEY',
+        ]),
+        'lc': 1,
+        'type': 'secret',
+      }),
+      'llama_api_url': 'https://fake-chat-model-params.llama.com/v1/',
+      'max_tokens': 100,
+      'model_name': 'Llama-4-Maverick-17B-128E-Instruct-FP8',
+      'temperature': 0.0,
+    }),
+    'lc': 1,
+    'name': 'ChatMetaLlama',
+    'type': 'constructor',
+  })
+# ---

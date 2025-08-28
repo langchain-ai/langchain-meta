@@ -639,6 +639,8 @@ dependencies = [
     { name = "aiohttp" },
     { name = "langchain-core" },
     { name = "langchain-openai" },
+    { name = "llama-api-client" },
+    { name = "regex" },
     { name = "requests" },
 ]
 
@@ -674,6 +676,8 @@ requires-dist = [
     { name = "aiohttp", specifier = ">=3.9.1,<4" },
     { name = "langchain-core", specifier = ">=0.3.51,<1.0.0" },
     { name = "langchain-openai", specifier = ">=0.3.12,<0.4" },
+    { name = "llama-api-client", specifier = ">=0.1.0" },
+    { name = "regex", specifier = ">=2023.0.0" },
     { name = "requests", specifier = ">=2,<3" },
 ]
 
@@ -747,6 +751,23 @@ dependencies = [
 sdist = { url = "https://files.pythonhosted.org/packages/b7/2c/d8acbc61896f5fc210a3f3bc8ddf39db5213b23eaf83a755ba334be30212/langsmith-0.3.5.tar.gz", hash = "sha256:d891a205f70ab0b2c26311db6c52486ffc9fc1124238b999619445f6ae900725", size = 321847, upload-time = "2025-02-04T17:58:20.225Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/e6/00/dbbb9df2c575217326021da731534f246dce4bb6e95b55432ff7191643ac/langsmith-0.3.5-py3-none-any.whl", hash = "sha256:29da924d2e3662dd56f96d179ebc06662b66dd0b2317362ccebe0de1b78750e7", size = 333276, upload-time = "2025-02-04T17:58:17.791Z" },
+]
+
+[[package]]
+name = "llama-api-client"
+version = "0.1.1"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "anyio" },
+    { name = "distro" },
+    { name = "httpx" },
+    { name = "pydantic" },
+    { name = "sniffio" },
+    { name = "typing-extensions" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/d6/2a/257f1e361956832e7fbbc7fccc29f14d3ba297af8c9b13f744f16289bfbd/llama_api_client-0.1.1.tar.gz", hash = "sha256:8fa395e62eb66b4ba07e26fd1edb0158b6b7cb2e46764f013b9b55b4465ebbc2", size = 111164 }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/89/7e/fd977da6d4b1ee6d9c2bb34f54e58a20d646a3a8173ad03a5c3adbb6360b/llama_api_client-0.1.1-py3-none-any.whl", hash = "sha256:debc3fda9a1120486ec22221174ade50720a94b1b02241c4424bd3afc42a1e1e", size = 83704 },
 ]
 
 [[package]]

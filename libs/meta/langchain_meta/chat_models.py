@@ -1,6 +1,7 @@
 # Copyright (c) Meta Platforms, Inc. and affiliates
 """Wrapper around Llama's Chat Completions API."""
 
+import os
 from typing import Any, Literal, Optional, TypeVar, Union
 
 import openai
@@ -223,7 +224,11 @@ class ChatLlama(BaseChatOpenAI):  # type: ignore[override]
 
     Automatically read from env variable `LLAMA_API_KEY` if not provided.
     """
-    llama_api_base: str = Field(default="https://api.llama.com/compat/v1/")
+    llama_api_base: str = Field(
+        default_factory=lambda: os.environ.get(
+            "LLAMA_API_BASE", "https://api.llama.com/compat/v1/"
+        )
+    )
     """Base URL path for API requests."""
 
     openai_api_key: Optional[SecretStr] = None
