@@ -24,11 +24,11 @@ def test_initialization() -> None:
 
 def test_llama_model_param() -> None:
     llm = ChatLlama(model="foo")
-    assert llm.model_name == "foo"
+    assert llm.model_name == "foo"  # type: ignore[attr-defined]
     llm = ChatLlama(model_name="foo")  # type: ignore[call-arg]
-    assert llm.model_name == "foo"
-    ls_params = llm._get_ls_params()
-    assert ls_params["ls_provider"] == "meta"
+    assert llm.model_name == "foo"  # type: ignore[attr-defined]
+    ls_params = llm._get_ls_params()  # type: ignore[attr-defined]
+    assert ls_params.get("ls_provider") == "meta"
 
 
 def test_chat_llama_invalid_streaming_params() -> None:
@@ -47,14 +47,14 @@ def test_chat_llama_extra_kwargs() -> None:
     """Test extra kwargs to chat llama."""
     # Check that foo is saved in extra_kwargs.
     llm = ChatLlama(model="Llama-4-Scout-17B-16E-Instruct-FP8", foo=3, max_tokens=10)  # type: ignore[call-arg]
-    assert llm.max_tokens == 10
-    assert llm.model_kwargs == {"foo": 3}
+    assert llm.max_tokens == 10  # type: ignore[attr-defined]
+    assert llm.model_kwargs == {"foo": 3}  # type: ignore[attr-defined]
 
     # Test that if extra_kwargs are provided, they are added to it.
     llm = ChatLlama(
         model="Llama-4-Scout-17B-16E-Instruct-FP8", foo=3, model_kwargs={"bar": 2}
     )  # type: ignore[call-arg]
-    assert llm.model_kwargs == {"foo": 3, "bar": 2}
+    assert llm.model_kwargs == {"foo": 3, "bar": 2}  # type: ignore[attr-defined]
 
     # Test that if provided twice it errors
     with pytest.raises(ValueError):
