@@ -4,6 +4,7 @@ This module provides ChatMetaLlama, a LangChain-compatible chat model that uses
 the native Meta Llama API via the llama-api-client package. It supports tool
 calling, streaming, and structured output generation.
 """
+
 # https://python.langchain.com/docs/how_to/custom_chat_model/
 
 import logging
@@ -11,14 +12,7 @@ import os
 import warnings
 from collections.abc import AsyncIterator, Iterator, Sequence
 from operator import itemgetter
-from typing import (
-    Any,
-    Callable,
-    ClassVar,
-    Literal,
-    Optional,
-    Union,
-)
+from typing import Any, Callable, ClassVar, Literal, Optional, Union
 
 from langchain_core.callbacks.manager import (
     AsyncCallbackManagerForLLMRun,
@@ -26,29 +20,18 @@ from langchain_core.callbacks.manager import (
 )
 from langchain_core.language_models.base import LanguageModelInput
 from langchain_core.language_models.chat_models import BaseChatModel
-from langchain_core.messages import (
-    BaseMessage,
-    SystemMessage,
-)
+from langchain_core.messages import BaseMessage, SystemMessage
 from langchain_core.output_parsers.openai_tools import (
     JsonOutputKeyToolsParser,
     PydanticToolsParser,
 )
 from langchain_core.outputs import ChatGenerationChunk
-from langchain_core.runnables import (
-    Runnable,
-    RunnableMap,
-    RunnablePassthrough,
-)
+from langchain_core.runnables import Runnable, RunnableMap, RunnablePassthrough
 from langchain_core.tools import BaseTool
 from langchain_core.utils.function_calling import convert_to_openai_tool
-from langchain_core.utils.pydantic import (
-    is_basemodel_subclass,
-)
+from langchain_core.utils.pydantic import is_basemodel_subclass
 from llama_api_client import AsyncLlamaAPIClient, LlamaAPIClient
-from llama_api_client.types.chat import (
-    completion_create_params,
-)
+from llama_api_client.types.chat import completion_create_params
 from pydantic import (
     BaseModel,
     ConfigDict,
@@ -62,9 +45,7 @@ from pydantic import (
 # Import the mixin
 from .chat_meta_llama.chat_async import AsyncChatMetaLlamaMixin
 from .chat_meta_llama.chat_sync import SyncChatMetaLlamaMixin
-from .chat_meta_llama.serialization import (
-    _lc_message_to_llama_message_param,
-)
+from .chat_meta_llama.serialization import _lc_message_to_llama_message_param
 
 logger = logging.getLogger(__name__)
 
@@ -165,8 +146,8 @@ class ChatMetaLlama(SyncChatMetaLlamaMixin, AsyncChatMetaLlamaMixin, BaseChatMod
         ```
     """
 
-    _client: LlamaAPIClient | None = PrivateAttr(default=None)
-    _async_client: AsyncLlamaAPIClient | None = PrivateAttr(default=None)
+    _client: Union[LlamaAPIClient, None] = PrivateAttr(default=None)
+    _async_client: Union[AsyncLlamaAPIClient, None] = PrivateAttr(default=None)
 
     # START_EDIT
     # Revert to Pydantic fields with aliases
@@ -195,11 +176,17 @@ class ChatMetaLlama(SyncChatMetaLlamaMixin, AsyncChatMetaLlamaMixin, BaseChatMod
         "response_format",
     }
 
-    lc_secrets: ClassVar[dict[str, str]] = {
-        "llama_api_key": "LLAMA_API_KEY",  # Pydantic field name
-    }
+    # Using @property instead of class variable to avoid overriding Serializable.lc_secrets
+    @property
+    def lc_secrets(self) -> dict[str, str]:
+        """Return secrets dict for serialization."""
+        return {"llama_api_key": "LLAMA_API_KEY"}  # Pydantic field name
 
-    lc_attributes: ClassVar[dict[str, Any]] = {}
+    # Using @property instead of class variable to avoid overriding Serializable.lc_attributes
+    @property
+    def lc_attributes(self) -> dict[str, Any]:
+        """Return attributes dict for serialization."""
+        return {}
 
     model_config = ConfigDict(
         validate_assignment=True,
@@ -306,9 +293,11 @@ class ChatMetaLlama(SyncChatMetaLlamaMixin, AsyncChatMetaLlamaMixin, BaseChatMod
             "max_tokens": _max_tokens_resolved,
             "repetition_penalty": repetition_penalty,  # Direct __init__ param
             # Ensure SecretStr conversion for llama_api_key before super().__init__
-            "llama_api_key": SecretStr(_llama_api_key_resolved)
-            if isinstance(_llama_api_key_resolved, str)
-            else _llama_api_key_resolved,
+            "llama_api_key": (
+                SecretStr(_llama_api_key_resolved)
+                if isinstance(_llama_api_key_resolved, str)
+                else _llama_api_key_resolved
+            ),
             "llama_api_url": _llama_api_url_resolved,
         }
 
@@ -414,7 +403,7 @@ class ChatMetaLlama(SyncChatMetaLlamaMixin, AsyncChatMetaLlamaMixin, BaseChatMod
         return "meta-llama"
 
     @property
-    def client(self) -> LlamaAPIClient | None:
+    def client(self) -> Union[LlamaAPIClient, None]:
         """Get the sync LlamaAPIClient instance."""
         return self._client
 
@@ -558,7 +547,7 @@ class ChatMetaLlama(SyncChatMetaLlamaMixin, AsyncChatMetaLlamaMixin, BaseChatMod
         return params
 
     def _get_invocation_params(
-        self, stop: list[str] | None = None, **kwargs: Any
+        self, stop: Union[list[str], None] = None, **kwargs: Any
     ) -> dict[Any, Any]:
         """Gets the parameters for a chat completion invocation."""
         return {
@@ -718,12 +707,13 @@ class ChatMetaLlama(SyncChatMetaLlamaMixin, AsyncChatMetaLlamaMixin, BaseChatMod
         messages: list[BaseMessage],
         stop: Optional[list[str]] = None,
         run_manager: Optional[CallbackManagerForLLMRun] = None,
-        tools: list[dict[Any, Any] | type[BaseModel] | Callable[..., Any] | BaseTool]
-        | None = None,
-        tool_choice: Literal["auto", "none", "any", "required"]
-        | dict[Any, Any]
-        | str
-        | None = None,
+        tools: Union[
+            list[Union[dict[Any, Any], type[BaseModel], Callable[..., Any], BaseTool]],
+            None,
+        ] = None,
+        tool_choice: Union[
+            Literal["auto", "none", "any", "required"], dict[Any, Any], str, None
+        ] = None,
         **kwargs: Any,
     ) -> Iterator[ChatGenerationChunk]:
         """Stream chat messages, returning an iterator of ChatGenerationChunks."""
