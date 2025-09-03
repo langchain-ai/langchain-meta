@@ -1,7 +1,11 @@
 # Copyright (c) Meta Platforms, Inc. and affiliates
 from langchain_meta import __all__
 
-EXPECTED_ALL = ["ChatLlama"]
+EXPECTED_ALL = [
+    "ChatLlama",
+    "ChatLlamaOpenAI",
+    "ChatLlamaNative",
+]
 
 
 def test_all_imports() -> None:

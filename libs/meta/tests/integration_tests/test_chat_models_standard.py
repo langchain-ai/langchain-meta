@@ -21,7 +21,7 @@ rate_limiter = InMemoryRateLimiter(
 class TestLlamaStandard(ChatModelIntegrationTests):
     @property
     def chat_model_class(self) -> type[BaseChatModel]:
-        return ChatLlama
+        return ChatLlama  # type: ignore[return-value]
 
     @property
     def chat_model_params(self) -> dict:
