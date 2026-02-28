@@ -2,13 +2,12 @@ import json
 import logging
 import re
 import uuid
+from collections.abc import Callable
 from typing import (
     Any,
-    Callable,
-    Optional,
     Union,
     cast,
-)  # Added Callable and Optional here
+)
 
 from langchain_core.messages import (
     AIMessage,
@@ -103,7 +102,7 @@ def serialize_message(message: BaseMessage) -> dict[str, Any]:
         result["tool_call_id"] = message.tool_call_id
         if not isinstance(message.content, str):
             try:
-                if isinstance(message.content, (dict, list)):
+                if isinstance(message.content, dict | list):
                     result["content"] = json.dumps(message.content)
             except (TypeError, OverflowError):
                 result["content"] = str(message.content)
@@ -112,13 +111,13 @@ def serialize_message(message: BaseMessage) -> dict[str, Any]:
 
 def _lc_message_to_llama_message_param(
     message: BaseMessage,
-    available_tools_with_schema: Optional[list[completion_create_params.Tool]] = None,
+    available_tools_with_schema: list[completion_create_params.Tool] | None = None,
 ) -> MessageParam:
     """Converts a LangChain BaseMessage to a Llama API MessageParam."""
     role: str
     content: Union[str, dict[str, Any]]  # noqa: F842
-    tool_calls: Optional[list[dict[str, Any]]] = None
-    tool_call_id: Optional[str] = None
+    tool_calls: list[dict[str, Any]] | None = None
+    tool_call_id: str | None = None
 
     if isinstance(message, HumanMessage):
         role = "user"
@@ -149,7 +148,7 @@ def _lc_message_to_llama_message_param(
                 # Coerce arguments if schema is available
                 if available_tools_with_schema:
                     tool_name = tc.get("name")
-                    tool_def_found: Optional[completion_create_params.Tool] = None
+                    tool_def_found: completion_create_params.Tool | None = None
                     for tool_definition in available_tools_with_schema:
                         # tool_definition is completion_create_params.Tool, a TypedDict
                         current_fn_def = tool_definition.get("function")
@@ -162,7 +161,7 @@ def _lc_message_to_llama_message_param(
                             tool_def_found = tool_definition
                             break
                     if tool_def_found:
-                        param_properties: Optional[dict[str, Any]] = None
+                        param_properties: dict[str, Any] | None = None
                         fn_def_from_found = tool_def_found.get("function")
                         if fn_def_from_found and isinstance(fn_def_from_found, dict):
                             params_schema = fn_def_from_found.get("parameters")
@@ -239,7 +238,7 @@ def _lc_message_to_llama_message_param(
         content_payload = message.content
     elif isinstance(message, ToolMessage):
         role = "tool"
-        if isinstance(message.content, (list, dict)):
+        if isinstance(message.content, list | dict):
             content_payload = json.dumps(message.content)
         else:
             content_payload = str(message.content)
@@ -763,7 +762,7 @@ def _normalize_tool_call(tc: dict) -> dict:
     return tool_call
 
 
-def _parse_textual_tool_args(args_str: Optional[str]) -> dict[str, Any]:
+def _parse_textual_tool_args(args_str: str | None) -> dict[str, Any]:
     """Parses a string of arguments like 'key="value", key2=value2' into a dict.
 
     Handles JSON-like structures if possible, otherwise falls back to regex parsing.

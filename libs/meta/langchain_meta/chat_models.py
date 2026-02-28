@@ -2,7 +2,7 @@
 """Wrapper around Llama's Chat Completions API."""
 
 import os
-from typing import Any, Literal, Optional, TypeVar, Union
+from typing import Any, Literal, TypeVar, Union
 
 import openai
 from langchain_core.language_models.chat_models import (
@@ -216,7 +216,7 @@ class ChatLlama(BaseChatOpenAI):  # type: ignore[override]
 
     model_name: str = Field(alias="model")
     """Model name to use."""
-    llama_api_key: Optional[SecretStr] = Field(
+    llama_api_key: SecretStr | None = Field(
         alias="api_key",
         default_factory=secret_from_env("LLAMA_API_KEY", default=None),
     )
@@ -231,8 +231,8 @@ class ChatLlama(BaseChatOpenAI):  # type: ignore[override]
     )
     """Base URL path for API requests."""
 
-    openai_api_key: Optional[SecretStr] = None
-    openai_api_base: Optional[str] = None
+    openai_api_key: SecretStr | None = None
+    openai_api_base: str | None = None
 
     model_config = ConfigDict(
         populate_by_name=True,
@@ -276,7 +276,7 @@ class ChatLlama(BaseChatOpenAI):  # type: ignore[override]
         return "llama-chat"
 
     def _get_ls_params(
-        self, stop: Optional[list[str]] = None, **kwargs: Any
+        self, stop: list[str] | None = None, **kwargs: Any
     ) -> LangSmithParams:
         """Get the parameters used to invoke the model."""
         params = super()._get_ls_params(stop=stop, **kwargs)
@@ -325,7 +325,7 @@ class ChatLlama(BaseChatOpenAI):  # type: ignore[override]
     def _create_chat_result(
         self,
         response: Union[dict, openai.BaseModel],
-        generation_info: Optional[dict] = None,
+        generation_info: dict | None = None,
     ) -> ChatResult:
         rtn = super()._create_chat_result(response, generation_info)
 
@@ -343,8 +343,8 @@ class ChatLlama(BaseChatOpenAI):  # type: ignore[override]
         self,
         chunk: dict,
         default_chunk_class: type,
-        base_generation_info: Optional[dict],
-    ) -> Optional[ChatGenerationChunk]:
+        base_generation_info: dict | None,
+    ) -> ChatGenerationChunk | None:
         generation_chunk = super()._convert_chunk_to_generation_chunk(
             chunk,
             default_chunk_class,
@@ -362,11 +362,11 @@ class ChatLlama(BaseChatOpenAI):  # type: ignore[override]
 
     def with_structured_output(
         self,
-        schema: Optional[_DictOrPydanticClass] = None,
+        schema: _DictOrPydanticClass | None = None,
         *,
         method: Literal["function_calling", "json_mode", "json_schema"] = "json_schema",
         include_raw: bool = False,
-        strict: Optional[bool] = None,
+        strict: bool | None = None,
         **kwargs: Any,
     ) -> Runnable[LanguageModelInput, _DictOrPydantic]:
         """Model wrapper that returns outputs formatted to match the given schema.

@@ -2,13 +2,11 @@ import json
 import logging
 import re  # Added re
 import uuid
-from collections.abc import Iterator
+from collections.abc import Callable, Iterator
 from datetime import datetime
 from typing import (
     Any,
-    Callable,
     Literal,
-    Optional,
     Union,
 )
 
@@ -51,11 +49,11 @@ class SyncChatMetaLlamaMixin:
 
     # Type hints for attributes/methods from ChatMetaLlama main class
     # that are used by these sync methods via `self`.
-    _client: Optional[LlamaAPIClient]
+    _client: LlamaAPIClient | None
     model_name: str
-    temperature: Optional[float]
-    max_tokens: Optional[int]
-    repetition_penalty: Optional[float]
+    temperature: float | None
+    max_tokens: int | None
+    repetition_penalty: float | None
 
     # Methods from the main class or other mixins expected to be available on self
     def _ensure_client_initialized(self) -> None:
@@ -64,8 +62,8 @@ class SyncChatMetaLlamaMixin:
     def _prepare_api_params(
         self,
         messages: list[BaseMessage],
-        tools: Optional[list[Any]] = None,
-        stop: Optional[list[str]] = None,
+        tools: list[Any] | None = None,
+        stop: list[str] | None = None,
         stream: bool = False,
         **kwargs: Any,
     ) -> dict[str, Any]:
@@ -83,12 +81,10 @@ class SyncChatMetaLlamaMixin:
     def _generate(
         self,
         messages: list[BaseMessage],
-        stop: Optional[list[str]] = None,
-        run_manager: Optional[CallbackManagerForLLMRun] = None,
-        tools: Optional[list[Union[dict, type[BaseModel], Callable, BaseTool]]] = None,
-        tool_choice: Optional[
-            Union[dict, str, Literal["auto", "none", "any", "required"]]
-        ] = None,
+        stop: list[str] | None = None,
+        run_manager: CallbackManagerForLLMRun | None = None,
+        tools: list[Union[dict, type[BaseModel], Callable, BaseTool]] | None = None,
+        tool_choice: Union[dict, str, Literal["auto", "none", "any", "required"]] | None = None,
         **kwargs: Any,
     ) -> ChatResult:
         """Generate a chat response using the sync API client."""
@@ -104,7 +100,7 @@ class SyncChatMetaLlamaMixin:
         input_tokens = self._count_tokens(messages)
 
         # === Callback Handling Start ===
-        llm_run_manager: Optional[CallbackManagerForLLMRun] = None
+        llm_run_manager: CallbackManagerForLLMRun | None = None
         if run_manager:
             if isinstance(run_manager, CallbackManagerForLLMRun):
                 llm_run_manager = run_manager
@@ -160,7 +156,7 @@ class SyncChatMetaLlamaMixin:
                 "_generate (sync): Using 'tools' from **kwargs as direct 'tools' parameter was None."
             )
 
-        prepared_llm_tools: Optional[list[completion_create_params.Tool]] = None
+        prepared_llm_tools: list[completion_create_params.Tool] | None = None
         if effective_tools_lc_input:
             tools_list_to_prepare = effective_tools_lc_input
             if not isinstance(effective_tools_lc_input, list):
@@ -564,12 +560,10 @@ class SyncChatMetaLlamaMixin:
     def _stream(
         self,
         messages: list[BaseMessage],
-        stop: Optional[list[str]] = None,
-        run_manager: Optional[CallbackManagerForLLMRun] = None,
-        tools: Optional[list[Union[dict, type[BaseModel], Callable, BaseTool]]] = None,
-        tool_choice: Optional[
-            Union[dict, str, Literal["auto", "none", "any", "required"]]
-        ] = None,
+        stop: list[str] | None = None,
+        run_manager: CallbackManagerForLLMRun | None = None,
+        tools: list[Union[dict, type[BaseModel], Callable, BaseTool]] | None = None,
+        tool_choice: Union[dict, str, Literal["auto", "none", "any", "required"]] | None = None,
         **kwargs: Any,
     ) -> Iterator[ChatGenerationChunk]:
         """Synchronously streams chat responses using LlamaAPIClient."""
@@ -589,7 +583,7 @@ class SyncChatMetaLlamaMixin:
                 "_stream (sync): Using 'tools' from **kwargs as direct 'tools' parameter was None."
             )
 
-        prepared_llm_tools: Optional[list[completion_create_params.Tool]] = None
+        prepared_llm_tools: list[completion_create_params.Tool] | None = None
         if effective_tools_lc_input:
             tools_list_to_prepare = effective_tools_lc_input
             if not isinstance(effective_tools_lc_input, list):

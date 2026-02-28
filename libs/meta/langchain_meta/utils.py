@@ -3,7 +3,7 @@
 import json
 import logging
 import re
-from typing import Any, Optional, Union, cast
+from typing import Any, Union, cast
 
 from langchain_core.language_models import BaseChatModel
 from langchain_core.messages import BaseMessage, SystemMessage
@@ -70,11 +70,11 @@ def parse_malformed_args_string(args_str: str) -> dict:
 
 def meta_agent_factory(
     llm: BaseChatModel,
-    tools: Optional[list[StructuredTool]] = None,
+    tools: list[StructuredTool] | None = None,
     system_prompt_text: str = "",
-    output_schema: Optional[Union[type[BaseModel], dict]] = None,
+    output_schema: Union[type[BaseModel], dict] | None = None,
     disable_streaming: bool = False,
-    additional_tags: Optional[list[str]] = None,
+    additional_tags: list[str] | None = None,
     method: str = "json_mode",
 ) -> RunnableSequence[Any, Any]:
     """Create a Meta-specific agent with structured output support.

@@ -9,13 +9,11 @@ import json
 import logging
 import re
 import uuid
-from collections.abc import AsyncIterator
+from collections.abc import AsyncIterator, Callable
 from datetime import datetime
 from typing import (
     Any,
-    Callable,
     Literal,
-    Optional,
     Union,
     cast,
 )
@@ -61,7 +59,7 @@ class AsyncChatMetaLlamaMixin:
 
     # Type hints for attributes/methods from ChatMetaLlama main class
     # that are used by these async methods via \`self\`.
-    _async_client: Optional[AsyncLlamaAPIClient]
+    _async_client: AsyncLlamaAPIClient | None
     model_name: str
 
     # These methods are expected to be part of the main ChatMetaLlama class
@@ -71,8 +69,8 @@ class AsyncChatMetaLlamaMixin:
     def _prepare_api_params(
         self,
         messages: list[BaseMessage],
-        tools: Optional[list[Any]] = None,
-        stop: Optional[list[str]] = None,
+        tools: list[Any] | None = None,
+        stop: list[str] | None = None,
         stream: bool = False,
         **kwargs: Any,
     ) -> dict[str, Any]:
@@ -90,12 +88,10 @@ class AsyncChatMetaLlamaMixin:
     async def _agenerate(
         self,
         messages: list[BaseMessage],
-        stop: Optional[list[str]] = None,
-        run_manager: Optional[AsyncCallbackManagerForLLMRun] = None,
-        tools: Optional[list[Union[dict, type[BaseModel], Callable, BaseTool]]] = None,
-        tool_choice: Optional[
-            Union[dict, str, Literal["auto", "none", "any", "required"]]
-        ] = None,
+        stop: list[str] | None = None,
+        run_manager: AsyncCallbackManagerForLLMRun | None = None,
+        tools: list[Union[dict, type[BaseModel], Callable, BaseTool]] | None = None,
+        tool_choice: Union[dict, str, Literal["auto", "none", "any", "required"]] | None = None,
         **kwargs: Any,
     ) -> ChatResult:
         """Asynchronously generates a chat response using AsyncLlamaAPIClient."""
@@ -167,7 +163,7 @@ class AsyncChatMetaLlamaMixin:
                 "direct 'tools' parameter was None."
             )
 
-        prepared_llm_tools: Optional[list[completion_create_params.Tool]] = None
+        prepared_llm_tools: list[completion_create_params.Tool] | None = None
         if effective_tools_lc_input:
             tools_list_to_prepare = effective_tools_lc_input
             if not isinstance(effective_tools_lc_input, list):
@@ -521,8 +517,8 @@ class AsyncChatMetaLlamaMixin:
     async def _astream(
         self,
         messages: list[BaseMessage],
-        stop: Optional[list[str]] = None,
-        run_manager: Optional[AsyncCallbackManagerForLLMRun] = None,
+        stop: list[str] | None = None,
+        run_manager: AsyncCallbackManagerForLLMRun | None = None,
         **kwargs: Any,
     ) -> AsyncIterator[ChatGenerationChunk]:
         """Asynchronously streams chat responses using AsyncLlamaAPIClient."""
@@ -543,7 +539,7 @@ class AsyncChatMetaLlamaMixin:
                 "_astream: Using 'tools' from **kwargs as direct 'tools' parameter was None."
             )
 
-        prepared_llm_tools: Optional[list[completion_create_params.Tool]] = None
+        prepared_llm_tools: list[completion_create_params.Tool] | None = None
         if effective_tools_lc_input:
             tools_list_to_prepare = effective_tools_lc_input
             if not isinstance(effective_tools_lc_input, list):
@@ -1038,7 +1034,7 @@ class AsyncChatMetaLlamaMixin:
     async def _astream_with_aggregation_and_retries(
         self,
         messages: list[BaseMessage],
-        run_manager: Optional[AsyncCallbackManagerForLLMRun] = None,
+        run_manager: AsyncCallbackManagerForLLMRun | None = None,
         **kwargs: Any,
     ) -> AsyncIterator[ChatGenerationChunk]:
         final_generation_info: dict[str, Any] = {}
@@ -1084,7 +1080,7 @@ class AsyncChatMetaLlamaMixin:
     async def _aget_stream_results(
         self,
         completion_coro: AsyncIterator[ChatGenerationChunk],
-        run_manager: Optional[AsyncCallbackManagerForLLMRun] = None,
+        run_manager: AsyncCallbackManagerForLLMRun | None = None,
     ) -> ChatResult:
         """Aggregates results from a stream of ChatGenerationChunks."""
         aggregated_content = ""

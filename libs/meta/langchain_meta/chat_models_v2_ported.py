@@ -10,9 +10,9 @@ calling, streaming, and structured output generation.
 import logging
 import os
 import warnings
-from collections.abc import AsyncIterator, Iterator, Sequence
+from collections.abc import AsyncIterator, Callable, Iterator, Sequence
 from operator import itemgetter
-from typing import Any, Callable, ClassVar, Literal, Optional, Union
+from typing import Any, ClassVar, Literal, Union
 
 from langchain_core.callbacks.manager import (
     AsyncCallbackManagerForLLMRun,
@@ -152,14 +152,14 @@ class ChatMetaLlama(SyncChatMetaLlamaMixin, AsyncChatMetaLlamaMixin, BaseChatMod
     # START_EDIT
     # Revert to Pydantic fields with aliases
     model_name: str = Field(default=LLAMA_DEFAULT_MODEL_NAME, alias="model")
-    temperature: Optional[float] = Field(default=None, alias="temperature")
-    max_tokens: Optional[int] = Field(default=None, alias="max_completion_tokens")
-    repetition_penalty: Optional[float] = Field(
+    temperature: float | None = Field(default=None, alias="temperature")
+    max_tokens: int | None = Field(default=None, alias="max_completion_tokens")
+    repetition_penalty: float | None = Field(
         default=None, alias="repetition_penalty"
     )
 
-    llama_api_key: Optional[SecretStr] = Field(default=None, alias="api_key")
-    llama_api_url: Optional[str] = Field(default=None, alias="base_url")
+    llama_api_key: SecretStr | None = Field(default=None, alias="api_key")
+    llama_api_url: str | None = Field(default=None, alias="base_url")
     # END_EDIT
 
     SUPPORTED_PARAMS: ClassVar[set] = {
@@ -198,14 +198,14 @@ class ChatMetaLlama(SyncChatMetaLlamaMixin, AsyncChatMetaLlamaMixin, BaseChatMod
         self,
         *,  # Make all args keyword-only
         # __init__ params should match the Pydantic field names (pre-alias names)
-        model_name: Optional[str] = None,
-        temperature: Optional[float] = None,
-        max_tokens: Optional[int] = None,
-        repetition_penalty: Optional[float] = None,
-        llama_api_key: Optional[str] = None,
-        llama_api_url: Optional[str] = None,
-        client: Optional[LlamaAPIClient] = None,
-        async_client: Optional[AsyncLlamaAPIClient] = None,
+        model_name: str | None = None,
+        temperature: float | None = None,
+        max_tokens: int | None = None,
+        repetition_penalty: float | None = None,
+        llama_api_key: str | None = None,
+        llama_api_url: str | None = None,
+        client: LlamaAPIClient | None = None,
+        async_client: AsyncLlamaAPIClient | None = None,
         **kwargs: Any,
     ):
         """Initialize the ChatMetaLlama model.
@@ -464,8 +464,8 @@ class ChatMetaLlama(SyncChatMetaLlamaMixin, AsyncChatMetaLlamaMixin, BaseChatMod
     def _prepare_api_params(
         self,
         messages: list[BaseMessage],
-        tools: Optional[list[completion_create_params.Tool]] = None,
-        stop: Optional[list[str]] = None,
+        tools: list[completion_create_params.Tool] | None = None,
+        stop: list[str] | None = None,
         stream: bool = False,
         **kwargs: Any,
     ) -> dict[str, Any]:
@@ -591,7 +591,7 @@ class ChatMetaLlama(SyncChatMetaLlamaMixin, AsyncChatMetaLlamaMixin, BaseChatMod
         self,
         tools: Sequence[Union[dict[str, Any], type[BaseModel], Callable, BaseTool]],
         *,
-        tool_choice: Optional[Union[str, dict, Literal["any", "auto"]]] = None,
+        tool_choice: Union[str, dict, Literal["any", "auto"]] | None = None,
         **kwargs: Any,
     ) -> Runnable[LanguageModelInput, BaseMessage]:  # MODIFIED (removed quotes)
         """Bind tool-like objects to this chat model.
@@ -617,7 +617,7 @@ class ChatMetaLlama(SyncChatMetaLlamaMixin, AsyncChatMetaLlamaMixin, BaseChatMod
         *,
         method: str = "function_calling",
         include_raw: bool = False,
-        strict: Optional[bool] = None,
+        strict: bool | None = None,
         **other_kwargs: Any,
     ) -> Runnable:
         """Create a runnable that returns structured output based on a schema.
@@ -705,8 +705,8 @@ class ChatMetaLlama(SyncChatMetaLlamaMixin, AsyncChatMetaLlamaMixin, BaseChatMod
     def _stream(
         self,
         messages: list[BaseMessage],
-        stop: Optional[list[str]] = None,
-        run_manager: Optional[CallbackManagerForLLMRun] = None,
+        stop: list[str] | None = None,
+        run_manager: CallbackManagerForLLMRun | None = None,
         tools: Union[
             list[Union[dict[Any, Any], type[BaseModel], Callable[..., Any], BaseTool]],
             None,
@@ -733,8 +733,8 @@ class ChatMetaLlama(SyncChatMetaLlamaMixin, AsyncChatMetaLlamaMixin, BaseChatMod
     async def _astream(
         self,
         messages: list[BaseMessage],
-        stop: Optional[list[str]] = None,
-        run_manager: Optional[AsyncCallbackManagerForLLMRun] = None,
+        stop: list[str] | None = None,
+        run_manager: AsyncCallbackManagerForLLMRun | None = None,
         **kwargs: Any,
     ) -> AsyncIterator[ChatGenerationChunk]:
         """Asynchronously stream chat messages, returning an async iterator of ChatGenerationChunks."""
