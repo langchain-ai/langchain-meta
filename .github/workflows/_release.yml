@@ -82,7 +82,9 @@ jobs:
       - build
     uses:
       ./.github/workflows/_test_release.yml
-    permissions: write-all
+    permissions:
+      contents: read
+      id-token: write
     with:
       working-directory: ${{ inputs.working-directory }}
       dangerous-nonmaster-release: ${{ inputs.dangerous-nonmaster-release }}
