@@ -91,7 +91,8 @@ class AsyncChatMetaLlamaMixin:
         stop: list[str] | None = None,
         run_manager: AsyncCallbackManagerForLLMRun | None = None,
         tools: list[Union[dict, type[BaseModel], Callable, BaseTool]] | None = None,
-        tool_choice: Union[dict, str, Literal["auto", "none", "any", "required"]] | None = None,
+        tool_choice: Union[dict, str, Literal["auto", "none", "any", "required"]]
+        | None = None,
         **kwargs: Any,
     ) -> ChatResult:
         """Asynchronously generates a chat response using AsyncLlamaAPIClient."""

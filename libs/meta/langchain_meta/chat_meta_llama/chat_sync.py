@@ -84,7 +84,8 @@ class SyncChatMetaLlamaMixin:
         stop: list[str] | None = None,
         run_manager: CallbackManagerForLLMRun | None = None,
         tools: list[Union[dict, type[BaseModel], Callable, BaseTool]] | None = None,
-        tool_choice: Union[dict, str, Literal["auto", "none", "any", "required"]] | None = None,
+        tool_choice: Union[dict, str, Literal["auto", "none", "any", "required"]]
+        | None = None,
         **kwargs: Any,
     ) -> ChatResult:
         """Generate a chat response using the sync API client."""
@@ -563,7 +564,8 @@ class SyncChatMetaLlamaMixin:
         stop: list[str] | None = None,
         run_manager: CallbackManagerForLLMRun | None = None,
         tools: list[Union[dict, type[BaseModel], Callable, BaseTool]] | None = None,
-        tool_choice: Union[dict, str, Literal["auto", "none", "any", "required"]] | None = None,
+        tool_choice: Union[dict, str, Literal["auto", "none", "any", "required"]]
+        | None = None,
         **kwargs: Any,
     ) -> Iterator[ChatGenerationChunk]:
         """Synchronously streams chat responses using LlamaAPIClient."""

@@ -154,9 +154,7 @@ class ChatMetaLlama(SyncChatMetaLlamaMixin, AsyncChatMetaLlamaMixin, BaseChatMod
     model_name: str = Field(default=LLAMA_DEFAULT_MODEL_NAME, alias="model")
     temperature: float | None = Field(default=None, alias="temperature")
     max_tokens: int | None = Field(default=None, alias="max_completion_tokens")
-    repetition_penalty: float | None = Field(
-        default=None, alias="repetition_penalty"
-    )
+    repetition_penalty: float | None = Field(default=None, alias="repetition_penalty")
 
     llama_api_key: SecretStr | None = Field(default=None, alias="api_key")
     llama_api_url: str | None = Field(default=None, alias="base_url")
