@@ -80,6 +80,13 @@ class TestLlamaStandard(ChatModelUnitTests):
             },
         )
 
+    @pytest.mark.xfail(
+        reason="langchain_meta is not yet in langchain-core's trusted "
+        "serialization allowlist (allowed_objects='all')",
+    )
+    def test_serdes(self, model: BaseChatModel, snapshot: Any) -> None:
+        super().test_serdes(model, snapshot)
+
     @pytest.mark.parametrize("schema", TEST_PYDANTIC_MODELS)
     @pytest.mark.xfail(
         reason="Llama models only support 'json_schema' method,"
