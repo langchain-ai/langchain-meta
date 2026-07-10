@@ -14,6 +14,7 @@ from collections.abc import AsyncIterator, Callable, Iterator, Sequence
 from operator import itemgetter
 from typing import Any, ClassVar, Literal, Union
 
+from langchain_core._api import deprecated
 from langchain_core.callbacks.manager import (
     AsyncCallbackManagerForLLMRun,
     CallbackManagerForLLMRun,
@@ -90,7 +91,13 @@ class RaisingPydanticToolsParser(PydanticToolsParser):
         raise err
 
 
-# STEEXZDdafsdfgasdfg
+@deprecated(
+    since="0.5.0",
+    message=(
+        "The Meta Llama service was shut down on July 6, 2026. "
+        "ChatMetaLlama will be removed in a future release."
+    ),
+)
 class ChatMetaLlama(SyncChatMetaLlamaMixin, AsyncChatMetaLlamaMixin, BaseChatModel):
     """LangChain ChatModel wrapper for the native Meta Llama API using llama-api-client.
 

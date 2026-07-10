@@ -5,6 +5,7 @@ import os
 from typing import Any, Literal, TypeVar, Union
 
 import openai
+from langchain_core._api import deprecated
 from langchain_core.language_models.chat_models import (
     LangSmithParams,
     LanguageModelInput,
@@ -22,6 +23,13 @@ _DictOrPydanticClass = Union[dict[str, Any], type[_BM], type]
 _DictOrPydantic = Union[dict, _BM]
 
 
+@deprecated(
+    since="0.5.0",
+    message=(
+        "The Meta Llama service was shut down on July 6, 2026. "
+        "ChatLlama will be removed in a future release."
+    ),
+)
 class ChatLlama(BaseChatOpenAI):  # type: ignore[override]
     r"""ChatLlama chat model.
 

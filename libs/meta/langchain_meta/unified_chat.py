@@ -5,6 +5,8 @@ Supports both OpenAI-based and native Llama API backends.
 
 from typing import Any, Union
 
+from langchain_core._api import deprecated
+
 from .chat_models import ChatLlama as ChatLlamaOpenAI
 from .chat_models_v2_ported import ChatMetaLlama as ChatLlamaNative
 
@@ -38,6 +40,14 @@ class ChatLlama:
         )
     """
 
+    @deprecated(
+        since="0.5.0",
+        name="ChatLlama",
+        message=(
+            "The Meta Llama service was shut down on July 6, 2026. "
+            "ChatLlama will be removed in a future release."
+        ),
+    )
     def __new__(  # type: ignore[misc]
         cls, use_native_client: bool = False, **kwargs: Any
     ) -> Union[ChatLlamaOpenAI, ChatLlamaNative]:
