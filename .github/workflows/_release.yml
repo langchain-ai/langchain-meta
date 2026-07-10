@@ -81,6 +81,9 @@ jobs:
               f.write(f"version={version}\n")
 
   test-pypi-publish:
+    # TODO: disabled test PyPI publishing. To recover, remove `if: false` here
+    # and re-add `- test-pypi-publish` to the `needs` of the jobs below.
+    if: false
     needs:
       - build
     uses:
@@ -96,7 +99,7 @@ jobs:
   pre-release-checks:
     needs:
       - build
-      - test-pypi-publish
+      # - test-pypi-publish
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -200,7 +203,7 @@ jobs:
   publish:
     needs:
       - build
-      - test-pypi-publish
+      # - test-pypi-publish
       - pre-release-checks
     runs-on: ubuntu-latest
     permissions:
@@ -240,7 +243,7 @@ jobs:
   mark-release:
     needs:
       - build
-      - test-pypi-publish
+      # - test-pypi-publish
       - pre-release-checks
       - publish
     runs-on: ubuntu-latest
