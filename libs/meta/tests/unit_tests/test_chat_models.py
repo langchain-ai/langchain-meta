@@ -14,12 +14,26 @@ from langchain_openai.chat_models.base import (
     _convert_message_to_dict,
 )
 
-from langchain_meta import ChatLlama
+from langchain_meta import ChatLlama, ChatMetaModel
 
 
 def test_initialization() -> None:
     """Test chat model initialization."""
     ChatLlama(model="Llama-4-Scout-17B-16E-Instruct-FP8")
+
+
+def test_meta_model_defaults() -> None:
+    """Meta model defaults to the Responses API and loads its model profile."""
+    llm = ChatMetaModel(model="muse-spark-1.1", api_key="foo")  # type: ignore[call-arg]
+    assert llm.model_name == "muse-spark-1.1"  # type: ignore[attr-defined]
+    assert llm._get_ls_params().get("ls_provider") == "meta"  # type: ignore[attr-defined]
+    assert llm.use_responses_api is True
+    assert llm.meta_api_base == "https://api.meta.ai/v1/"  # type: ignore[attr-defined]
+    assert llm.profile is not None
+    assert llm.profile["max_input_tokens"] == 1_000_000
+
+    # Unknown models resolve to no profile rather than erroring.
+    assert ChatMetaModel(model="unknown", api_key="foo").profile is None  # type: ignore[call-arg]
 
 
 def test_llama_model_param() -> None:

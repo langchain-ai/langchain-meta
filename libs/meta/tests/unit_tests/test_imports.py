@@ -5,6 +5,7 @@ EXPECTED_ALL = [
     "ChatLlama",
     "ChatLlamaOpenAI",
     "ChatLlamaNative",
+    "ChatMetaModel",
 ]
 
 

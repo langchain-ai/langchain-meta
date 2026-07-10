@@ -9,7 +9,7 @@ UV_FROZEN = true
 # Define a variable for the test file path.
 TEST_FILE ?= tests/unit_tests/
 
-integration_test integration_tests: TEST_FILE=tests/integration_tests/
+integration_test integration_tests: TEST_FILE=tests/integration_tests/test_chat_models_standard.py
 
 test tests:
 	uv run --group test pytest --disable-socket --allow-unix-socket $(TEST_FILE)
@@ -18,7 +18,7 @@ test_watch:
 	uv run --group test ptw --snapshot-update --now . -- -vv $(TEST_FILE)
 
 integration_test integration_tests:
-	uv run --group test --group test_integration pytest $(TEST_FILE)
+	uv run --group test --group test_integration pytest -n auto $(TEST_FILE)
 
 ######################
 # LINTING AND FORMATTING
