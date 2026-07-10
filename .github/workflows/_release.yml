@@ -169,6 +169,8 @@ jobs:
         working-directory: ${{ inputs.working-directory }}
 
       - name: Run integration tests
+        # TODO: set up CI
+        if: false
         env:
           LLAMA_API_KEY: ${{ secrets.LLAMA_API_KEY }}
         run: |
