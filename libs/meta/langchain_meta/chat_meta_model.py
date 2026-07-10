@@ -223,9 +223,7 @@ class ChatMetaModel(BaseChatOpenAI):  # type: ignore[override]
         self,
         schema: dict | type | None = None,
         *,
-        method: Literal[
-            "function_calling", "json_mode", "json_schema"
-        ] = "json_schema",
+        method: Literal["function_calling", "json_mode", "json_schema"] = "json_schema",
         include_raw: bool = False,
         strict: bool | None = None,
         **kwargs: Any,
