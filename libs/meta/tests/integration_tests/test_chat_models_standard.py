@@ -1,6 +1,9 @@
 # Copyright (c) Meta Platforms, Inc. and affiliates
 """Standard LangChain interface tests"""
 
+from typing import Any
+
+import pytest
 from langchain_core.language_models import BaseChatModel
 from langchain_tests.integration_tests import (  # type: ignore[import-not-found]
     ChatModelIntegrationTests,  # type: ignore[import-not-found]
@@ -33,3 +36,12 @@ class TestMetaModelStandard(ChatModelIntegrationTests):
     @property
     def supports_pdf_inputs(self) -> bool:
         return True
+
+    @pytest.mark.xfail(
+        reason=(
+            'Test forces `tool_choice="any"`, but Meta only supports '
+            '`tool_choice="auto"`.'
+        )
+    )
+    def test_structured_few_shot_examples(self, *args: Any) -> None:
+        super().test_structured_few_shot_examples(*args)
